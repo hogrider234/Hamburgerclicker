@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hamburger Clicker Deluxe 🍔</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    font-family: system-ui, Arial;
+    background: linear-gradient(180deg, #ffcc70, #ff8c42);
+    text-align: center;
+    margin: 0;
+    padding: 15px;
+  }
+
+  h1 { margin-bottom: 5px; }
+
+  .burger {
+    font-size: 120px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+  }
+
+  .burger:active { transform: scale(0.9); }
+
+  .stats {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+
+  .shop, .panel {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    max-width: 360px;
+    margin: 15px auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #ff8c42;
+    color: white;
+  }
+
+  button:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    font-size: 24px;
+    animation: pop 0.8s ease-out forwards;
+  }
+
+  @keyframes pop {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-60px) scale(1.5); }
+  }
+
+  .achievement {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .footer {
+    opacity: 0.7;
+    font-size: 14px;
+    margin-top: 25px;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Hamburger Clicker 🍔</h1>
+<p>Capitalism but tasty.</p>
+
+<div class="burger" onclick="clickBurger(event)">🍔</div>
+
+<div class="stats">
+  Burgers: <span id="burgers">0</span><br>
+  Per Click: <span id="bpc">1</span><br>
+  Per Second: <span id="bps">0</span>
+</div>
+
+<div class="shop">
+  <h2>🍳 Shop</h2>
+
+  <p>Spatula (+1 per click)</p>
+  <button onclick="buyClickUpgrade()">Buy (Cost: <span id="clickCost">10</span>)</button>
+
+  <p>Grill Bot (+1 per second)</p>
+  <button onclick="buyAuto()">Buy (Cost: <span id="autoCost">25</span>)</button>
+
+  <p>AI Chef 🤖 (Boosts production)</p>
+  <button onclick="buyAI()">Hire (Cost: <span id="aiCost">100</span>)</button>
+</div>
+
+<div class="panel">
+  <h2>🏆 Achievements</h2>
+  <div id="achievements"></div>
+</div>
+
+<div class="panel">
+  <h2>🤖 AI Chef Says</h2>
+  <p id="aiText">“Click the burger.”</p>
+</div>
+
+<div class="footer">
+  Auto-saving enabled 💾
+</div>
+
+<audio id="clickSound" src="https://cdn.jsdelivr.net/gh/jshawl/AudioFX/click.mp3"></audio>
+
+<script>
+let burgers = +localStorage.getItem("burgers") || 0;
+let bpc = +localStorage.getItem("bpc") || 1;
+let auto = +localStorage.getItem("auto") || 0;
+let aiLevel = +localStorage.getItem("ai") || 0;
+
+let clickCost = +localStorage.getItem("clickCost") || 10;
+let autoCost = +localStorage.getItem("autoCost") || 25;
+let aiCost = +localStorage.getItem("aiCost") || 100;
+
+const tips = [
+  "More salt = more clicks.",
+  "Automate everything.",
+  "Bigger burgers, bigger profits.",
+  "Never trust a vegan bot.",
+  "Synergy is delicious."
+];
+
+const achievements = [
+  { name: "First Bite", goal: 1 },
+  { name: "Burger Fanatic", goal: 100 },
+  { name: "Fast Food Empire", goal: 1000 },
+  { name: "AI Overlord", goal: 5000 }
+];
+
+function updateUI() {
+  burgersSpan.textContent = Math.floor(burgers);
+  bpcSpan.textContent = bpc;
+  bpsSpan.textContent = auto * (1 + aiLevel * 0.25);
+
+  clickCostSpan.textContent = clickCost;
+  autoCostSpan.textContent = autoCost;
+  aiCostSpan.textContent = aiCost;
+
+  localStorage.setItem("burgers", burgers);
+  localStorage.setItem("bpc", bpc);
+  localStorage.setItem("auto", auto);
+  localStorage.setItem("ai", aiLevel);
+  localStorage.setItem("clickCost", clickCost);
+  localStorage.setItem("autoCost", autoCost);
+  localStorage.setItem("aiCost", aiCost);
+
+  renderAchievements();
+}
+
+function clickBurger(e) {
+  burgers += bpc * (1 + aiLevel * 0.2);
+  document.getElementById("clickSound").play();
+  spawnParticle(e.clientX, e.clientY);
+  updateUI();
+}
+
+function spawnParticle(x, y) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  p.style.left = x + "px";
+  p.style.top = y + "px";
+  p.textContent = "+🍔";
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 800);
+}
+
+function buyClickUpgrade() {
+  if (burgers >= clickCost) {
+    burgers -= clickCost;
+    bpc++;
+    clickCost = Math.floor(clickCost * 1.7);
+    updateUI();
+  }
+}
+
+function buyAuto() {
+  if (burgers >= autoCost) {
+    burgers -= autoCost;
+    auto++;
+    autoCost = Math.floor(autoCost * 1.8);
+    updateUI();
+  }
+}
+
+function buyAI() {
+  if (burgers >= aiCost) {
+    burgers -= aiCost;
+    aiLevel++;
+    aiCost = Math.floor(aiCost * 2);
+    document.getElementById("aiText").textContent =
+      tips[Math.floor(Math.random() * tips.length)];
+    updateUI();
+  }
+}
+
+function renderAchievements() {
+  const box = document.getElementById("achievements");
+  box.innerHTML = "";
+  achievements.forEach(a => {
+    if (burgers >= a.goal) {
+      box.innerHTML += `<div class="achievement">✅ ${a.name}</div>`;
+    }
+  });
+}
+
+setInterval(() => {
+  burgers += auto * (1 + aiLevel * 0.25);
+  updateUI();
+}, 1000);
+
+const burgersSpan = document.getElementById("burgers");
+const bpcSpan = document.getElementById("bpc");
+const bpsSpan = document.getElementById("bps");
+const clickCostSpan = document.getElementById("clickCost");
+const autoCostSpan = document.getElementById("autoCost");
+const aiCostSpan = document.getElementById("aiCost");
+
+updateUI();
+</script>
+
+</body>
+</html>
