@@ -2,242 +2,391 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hamburger Clicker Deluxe 🍔</title>
+<title>Hamburger Clicker Deluxe 🍔∞</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  body {
-    font-family: system-ui, Arial;
-    background: linear-gradient(180deg, #ffcc70, #ff8c42);
-    text-align: center;
-    margin: 0;
-    padding: 15px;
-  }
+body{
+  font-family:system-ui,Arial;
+  background:linear-gradient(180deg,#ffcc70,#ff8c42);
+  text-align:center;
+  margin:0;
+  padding:12px;
+}
 
-  h1 { margin-bottom: 5px; }
+h1{margin:6px 0}
 
-  .burger {
-    font-size: 120px;
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.1s;
-  }
+.burger{
+  font-size:110px;
+  cursor:pointer;
+  transition:transform .12s, filter .2s;
+}
+.burger:active{transform:scale(.88)}
+.burger.pulse{animation:pulse 1.2s infinite}
 
-  .burger:active { transform: scale(0.9); }
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
 
-  .stats {
-    font-size: 20px;
-    margin: 10px 0;
-  }
+.panel,.shop{
+  background:white;
+  border-radius:14px;
+  padding:14px;
+  max-width:420px;
+  margin:12px auto;
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
 
-  .shop, .panel {
-    background: white;
-    border-radius: 14px;
-    padding: 15px;
-    max-width: 360px;
-    margin: 15px auto;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  }
+button{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:10px;
+  border:none;
+  font-size:15px;
+  cursor:pointer;
+  background:#ff8c42;
+  color:white;
+  transition:transform .1s, filter .15s;
+}
+button:hover{filter:brightness(1.08)}
+button:active{transform:scale(.96)}
 
-  button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background: #ff8c42;
-    color: white;
-  }
+.particle{
+  position:absolute;
+  pointer-events:none;
+  font-size:22px;
+  animation:pop .9s ease-out forwards;
+}
+@keyframes pop{
+  from{opacity:1; transform:translateY(0) scale(1)}
+  to{opacity:0; transform:translateY(-70px) scale(1.6)}
+}
 
-  button:disabled {
-    background: gray;
-    cursor: not-allowed;
-  }
+.golden{
+  position:absolute;
+  font-size:48px;
+  cursor:pointer;
+  animation:goldSpin 2s linear infinite;
+}
+@keyframes goldSpin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
 
-  .particle {
-    position: absolute;
-    pointer-events: none;
-    font-size: 24px;
-    animation: pop 0.8s ease-out forwards;
-  }
+.upgradeFlash{animation:flash .4s}
+@keyframes flash{
+  0%{background:#fff3}
+  100%{background:white}
+}
 
-  @keyframes pop {
-    from { opacity: 1; transform: translateY(0) scale(1); }
-    to { opacity: 0; transform: translateY(-60px) scale(1.5); }
-  }
+.constellation{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:center;
+}
+.star{
+  width:42px;height:42px;border-radius:50%;
+  background:#ddd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+.star.on{background:gold}
 
-  .achievement {
-    font-size: 14px;
-    margin-top: 5px;
-  }
-
-  .footer {
-    opacity: 0.7;
-    font-size: 14px;
-    margin-top: 25px;
-  }
+@media(max-width:600px){
+  .burger{font-size:90px}
+  button{font-size:14px}
+}
 </style>
 </head>
 
 <body>
 
 <h1>Hamburger Clicker 🍔</h1>
-<p>Capitalism but tasty.</p>
+<p>Capitalism but tastier.</p>
 
-<div class="burger" onclick="clickBurger(event)">🍔</div>
+<div id="burger" class="burger pulse" onclick="clickBurger(event)">🍔</div>
 
-<div class="stats">
-  Burgers: <span id="burgers">0</span><br>
-  Per Click: <span id="bpc">1</span><br>
-  Per Second: <span id="bps">0</span>
+<div class="panel">
+Burgers: <span id="burgers">0</span><br>
+Per Click: <span id="bpc">1</span><br>
+Per Second: <span id="bps">0</span><br>
+Combo: <span id="combo">0</span>x
 </div>
 
 <div class="shop">
-  <h2>🍳 Shop</h2>
-
-  <p>Spatula (+1 per click)</p>
-  <button onclick="buyClickUpgrade()">Buy (Cost: <span id="clickCost">10</span>)</button>
-
-  <p>Grill Bot (+1 per second)</p>
-  <button onclick="buyAuto()">Buy (Cost: <span id="autoCost">25</span>)</button>
-
-  <p>AI Chef 🤖 (Boosts production)</p>
-  <button onclick="buyAI()">Hire (Cost: <span id="aiCost">100</span>)</button>
+<h3>Shop</h3>
+<button onclick="buyClickUpgrade()">Spatula +1 click (<span id="clickCost">10</span>)</button>
+<button onclick="buyAuto()">Grill Bot +1/sec (<span id="autoCost">25</span>)</button>
+<button onclick="buyAI()">AI Chef boost (<span id="aiCost">100</span>)</button>
 </div>
 
 <div class="panel">
-  <h2>🏆 Achievements</h2>
-  <div id="achievements"></div>
+<h3>Constellation Skills</h3>
+<div class="constellation" id="constellation"></div>
 </div>
 
 <div class="panel">
-  <h2>🤖 AI Chef Says</h2>
-  <p id="aiText">“Click the burger.”</p>
+<h3>Boss</h3>
+<div id="bossBox"></div>
+<button onclick="startBoss()">Spawn Boss</button>
 </div>
 
-<div class="footer">
-  Auto-saving enabled 💾
+<div class="panel">
+<h3>Save</h3>
+<button onclick="exportSave()">Export</button>
+<button onclick="importSave()">Import</button>
 </div>
-
-<audio id="clickSound" src="https://cdn.jsdelivr.net/gh/jshawl/AudioFX/click.mp3"></audio>
 
 <script>
-let burgers = +localStorage.getItem("burgers") || 0;
-let bpc = +localStorage.getItem("bpc") || 1;
-let auto = +localStorage.getItem("auto") || 0;
-let aiLevel = +localStorage.getItem("ai") || 0;
 
-let clickCost = +localStorage.getItem("clickCost") || 10;
-let autoCost = +localStorage.getItem("autoCost") || 25;
-let aiCost = +localStorage.getItem("aiCost") || 100;
+/* ---------------- ORIGINAL CORE ---------------- */
 
-const tips = [
-  "More salt = more clicks.",
-  "Automate everything.",
-  "Bigger burgers, bigger profits.",
-  "Never trust a vegan bot.",
-  "Synergy is delicious."
-];
+let burgers=+localStorage.burgers||0
+let bpc=+localStorage.bpc||1
+let auto=+localStorage.auto||0
+let aiLevel=+localStorage.ai||0
 
-const achievements = [
-  { name: "First Bite", goal: 1 },
-  { name: "Burger Fanatic", goal: 100 },
-  { name: "Fast Food Empire", goal: 1000 },
-  { name: "AI Overlord", goal: 5000 }
-];
+let clickCost=+localStorage.clickCost||10
+let autoCost=+localStorage.autoCost||25
+let aiCost=+localStorage.aiCost||100
 
-function updateUI() {
-  burgersSpan.textContent = Math.floor(burgers);
-  bpcSpan.textContent = bpc;
-  bpsSpan.textContent = auto * (1 + aiLevel * 0.25);
+/* ---------------- NEW SYSTEMS (ADDITIVE) ---------------- */
 
-  clickCostSpan.textContent = clickCost;
-  autoCostSpan.textContent = autoCost;
-  aiCostSpan.textContent = aiCost;
+let combo=0
+let comboTimer=0
+let prestigeStars=+localStorage.prestigeStars||0
 
-  localStorage.setItem("burgers", burgers);
-  localStorage.setItem("bpc", bpc);
-  localStorage.setItem("auto", auto);
-  localStorage.setItem("ai", aiLevel);
-  localStorage.setItem("clickCost", clickCost);
-  localStorage.setItem("autoCost", autoCost);
-  localStorage.setItem("aiCost", aiCost);
+let constellation=[0,0,0,0,0,0]
 
-  renderAchievements();
+let boss=null
+
+/* ---------------- GETTERS ---------------- */
+
+function getClickPower(){
+  let base=bpc*(1+aiLevel*.2)
+  return base*(1+combo*.05)*constellationBonusMult()
 }
 
-function clickBurger(e) {
-  burgers += bpc * (1 + aiLevel * 0.2);
-  document.getElementById("clickSound").play();
-  spawnParticle(e.clientX, e.clientY);
-  updateUI();
+function getBPS(){
+  return auto*(1+aiLevel*.25)*constellationBonusMult()
 }
 
-function spawnParticle(x, y) {
-  const p = document.createElement("div");
-  p.className = "particle";
-  p.style.left = x + "px";
-  p.style.top = y + "px";
-  p.textContent = "+🍔";
-  document.body.appendChild(p);
-  setTimeout(() => p.remove(), 800);
+/* ---------------- UI ---------------- */
+
+function updateUI(){
+  burgersSpan.textContent=Math.floor(burgers)
+  bpcSpan.textContent=Math.floor(getClickPower())
+  bpsSpan.textContent=Math.floor(getBPS())
+  comboSpan.textContent=combo
+
+  clickCostSpan.textContent=clickCost
+  autoCostSpan.textContent=autoCost
+  aiCostSpan.textContent=aiCost
+
+  localStorage.burgers=burgers
+  localStorage.bpc=bpc
+  localStorage.auto=auto
+  localStorage.ai=aiLevel
+  localStorage.clickCost=clickCost
+  localStorage.autoCost=autoCost
+  localStorage.aiCost=aiCost
+  localStorage.prestigeStars=prestigeStars
 }
 
-function buyClickUpgrade() {
-  if (burgers >= clickCost) {
-    burgers -= clickCost;
-    bpc++;
-    clickCost = Math.floor(clickCost * 1.7);
-    updateUI();
+/* ---------------- CLICK ---------------- */
+
+function clickBurger(e){
+  burgers+=getClickPower()
+  spawnParticle(e.clientX,e.clientY)
+
+  combo++
+  comboTimer=2
+  maybeGolden()
+  hitBoss(getClickPower())
+  updateUI()
+}
+
+/* ---------------- PARTICLES ---------------- */
+
+function spawnParticle(x,y){
+  const p=document.createElement("div")
+  p.className="particle"
+  p.textContent="+🍔"
+  p.style.left=x+"px"
+  p.style.top=y+"px"
+  document.body.appendChild(p)
+  setTimeout(()=>p.remove(),900)
+}
+
+/* ---------------- SHOP ---------------- */
+
+function buyClickUpgrade(){
+ if(burgers>=clickCost){
+  burgers-=clickCost
+  bpc++
+  clickCost=Math.floor(clickCost*1.7)
+  flashButton(event.target)
+ }
+}
+
+function buyAuto(){
+ if(burgers>=autoCost){
+  burgers-=autoCost
+  auto++
+  autoCost=Math.floor(autoCost*1.8)
+  flashButton(event.target)
+ }
+}
+
+function buyAI(){
+ if(burgers>=aiCost){
+  burgers-=aiCost
+  aiLevel++
+  aiCost=Math.floor(aiCost*2)
+  flashButton(event.target)
+ }
+}
+
+/* ---------------- GOLDEN BURGER ---------------- */
+
+function maybeGolden(){
+ if(Math.random()<1/60){
+  const g=document.createElement("div")
+  g.className="golden"
+  g.textContent="🍔"
+  g.style.left=(window.innerWidth/2+Math.random()*120-60)+"px"
+  g.style.top=(window.innerHeight/2-120)+"px"
+  g.onclick=()=>{
+    goldenBoost=10
+    setTimeout(()=>goldenBoost=1,15000)
+    g.remove()
   }
+  document.body.appendChild(g)
+  setTimeout(()=>g.remove(),6000)
+ }
 }
 
-function buyAuto() {
-  if (burgers >= autoCost) {
-    burgers -= autoCost;
-    auto++;
-    autoCost = Math.floor(autoCost * 1.8);
-    updateUI();
-  }
+let goldenBoost=1
+
+/* ---------------- CONSTELLATION ---------------- */
+
+function constellationBonusMult(){
+  return 1 + constellation.reduce((a,b)=>a+b,0)*.15
 }
 
-function buyAI() {
-  if (burgers >= aiCost) {
-    burgers -= aiCost;
-    aiLevel++;
-    aiCost = Math.floor(aiCost * 2);
-    document.getElementById("aiText").textContent =
-      tips[Math.floor(Math.random() * tips.length)];
-    updateUI();
-  }
-}
-
-function renderAchievements() {
-  const box = document.getElementById("achievements");
-  box.innerHTML = "";
-  achievements.forEach(a => {
-    if (burgers >= a.goal) {
-      box.innerHTML += `<div class="achievement">✅ ${a.name}</div>`;
+function renderConstellation(){
+  const box=document.getElementById("constellation")
+  box.innerHTML=""
+  constellation.forEach((v,i)=>{
+    const s=document.createElement("div")
+    s.className="star"+(v?" on":"")
+    s.textContent="★"
+    s.onclick=()=>{
+      if(prestigeStars>0 && !constellation[i]){
+        constellation[i]=1
+        prestigeStars--
+        renderConstellation()
+      }
     }
-  });
+    box.appendChild(s)
+  })
 }
 
-setInterval(() => {
-  burgers += auto * (1 + aiLevel * 0.25);
-  updateUI();
-}, 1000);
+/* ---------------- BOSS ---------------- */
 
-const burgersSpan = document.getElementById("burgers");
-const bpcSpan = document.getElementById("bpc");
-const bpsSpan = document.getElementById("bps");
-const clickCostSpan = document.getElementById("clickCost");
-const autoCostSpan = document.getElementById("autoCost");
-const aiCostSpan = document.getElementById("aiCost");
+function startBoss(){
+ boss={hp:5000,phase:1}
+ renderBoss()
+}
 
-updateUI();
+function hitBoss(d){
+ if(!boss)return
+ boss.hp-=d
+ if(boss.hp<=0){burgers+=1000; boss=null}
+ renderBoss()
+}
+
+function renderBoss(){
+ const b=document.getElementById("bossBox")
+ if(!boss){b.textContent="None";return}
+ b.textContent="HP "+Math.floor(boss.hp)
+}
+
+/* ---------------- EXPORT ---------------- */
+
+function exportSave(){
+ prompt("Copy", btoa(JSON.stringify(localStorage)))
+}
+function importSave(){
+ const d=prompt("Paste")
+ if(!d)return
+ Object.assign(localStorage, JSON.parse(atob(d)))
+ location.reload()
+}
+
+/* ---------------- HELPERS ---------------- */
+
+function flashButton(btn){
+ btn.classList.add("upgradeFlash")
+ setTimeout(()=>btn.classList.remove("upgradeFlash"),400)
+}
+
+/* ---------------- LOOPS ---------------- */
+
+setInterval(()=>{
+ burgers+=getBPS()*goldenBoost
+ comboTimer-=1
+ if(comboTimer<=0) combo=0
+ updateUI()
+},1000)
+
+/* ---------------- CLOUD / ONLINE SIM (ADDITIVE) ---------------- */
+
+function cloudSave(){
+ localStorage.cloudSave=btoa(JSON.stringify(localStorage))
+}
+function cloudLoad(){
+ if(localStorage.cloudSave){
+  Object.assign(localStorage,JSON.parse(atob(localStorage.cloudSave)))
+  location.reload()
+ }
+}
+
+/* ---------------- ONLINE PANEL INJECTOR ---------------- */
+
+function addOnlineButtons(){
+ const panel=document.createElement("div")
+ panel.className="panel"
+ panel.innerHTML=`
+  <h3>Online</h3>
+  <button onclick="cloudSave()">Cloud Save</button>
+  <button onclick="cloudLoad()">Cloud Load</button>
+ `
+ document.body.appendChild(panel)
+}
+
+addOnlineButtons()
+
+/* ---------------- DOM REFS ---------------- */
+
+const burgersSpan=document.getElementById("burgers")
+const bpcSpan=document.getElementById("bpc")
+const bpsSpan=document.getElementById("bps")
+const comboSpan=document.getElementById("combo")
+
+const clickCostSpan=document.getElementById("clickCost")
+const autoCostSpan=document.getElementById("autoCost")
+const aiCostSpan=document.getElementById("aiCost")
+
+renderConstellation()
+updateUI()
+
 </script>
-
 </body>
 </html>
