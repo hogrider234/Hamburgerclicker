@@ -2,391 +2,1387 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hamburger Clicker Deluxe 🍔∞</title>
+<title>Hamburger Clicker Deluxe 🍔</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ===== PWA Support ===== -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff7043">
+
 <style>
-body{
-  font-family:system-ui,Arial;
-  background:linear-gradient(180deg,#ffcc70,#ff8c42);
-  text-align:center;
-  margin:0;
-  padding:12px;
+/* ===== GENERAL STYLING ===== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(180deg, #ffecb3, #ff7043);
+    text-align: center;
+    margin: 0;
+    padding: 15px;
+    overflow-x: hidden;
+    position: relative;
 }
 
-h1{margin:6px 0}
-
-.burger{
-  font-size:110px;
-  cursor:pointer;
-  transition:transform .12s, filter .2s;
-}
-.burger:active{transform:scale(.88)}
-.burger.pulse{animation:pulse 1.2s infinite}
-
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.08)}
-  100%{transform:scale(1)}
+h1 {
+    margin-bottom: 5px;
+    text-shadow: 2px 2px #ff8c42;
+    font-size: 2.5em;
 }
 
-.panel,.shop{
-  background:white;
-  border-radius:14px;
-  padding:14px;
-  max-width:420px;
-  margin:12px auto;
-  box-shadow:0 8px 20px rgba(0,0,0,.25);
+p {
+    font-size: 1em;
+    margin-top: 0;
+    color: #4e342e;
 }
 
-button{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  border-radius:10px;
-  border:none;
-  font-size:15px;
-  cursor:pointer;
-  background:#ff8c42;
-  color:white;
-  transition:transform .1s, filter .15s;
-}
-button:hover{filter:brightness(1.08)}
-button:active{transform:scale(.96)}
-
-.particle{
-  position:absolute;
-  pointer-events:none;
-  font-size:22px;
-  animation:pop .9s ease-out forwards;
-}
-@keyframes pop{
-  from{opacity:1; transform:translateY(0) scale(1)}
-  to{opacity:0; transform:translateY(-70px) scale(1.6)}
+/* ===== BURGER BUTTON ===== */
+.burger {
+    font-size: 150px;
+    cursor: pointer;
+    user-select: none;
+    display: inline-block;
+    text-shadow: 2px 2px #ff8c42;
+    position: relative;
+    z-index: 10;
+    transition: transform 0.1s;
 }
 
-.golden{
-  position:absolute;
-  font-size:48px;
-  cursor:pointer;
-  animation:goldSpin 2s linear infinite;
-}
-@keyframes goldSpin{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
+.burger.bounce {
+    animation: burgerBounce 0.3s ease-out forwards;
 }
 
-.upgradeFlash{animation:flash .4s}
-@keyframes flash{
-  0%{background:#fff3}
-  100%{background:white}
+@keyframes burgerBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
 }
 
-.constellation{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  justify-content:center;
+/* ===== STATS ===== */
+.stats {
+    font-size: 20px;
+    margin: 10px 0;
+    color: #4e342e;
 }
-.star{
-  width:42px;height:42px;border-radius:50%;
-  background:#ddd;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-}
-.star.on{background:gold}
 
-@media(max-width:600px){
-  .burger{font-size:90px}
-  button{font-size:14px}
+/* ===== PANELS ===== */
+.shop, .panel, .upgrades, .skillTree {
+    background: #fff8e1;
+    border-radius: 14px;
+    padding: 20px;
+    max-width: 450px;
+    margin: 15px auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+h2 {
+    margin-top: 0;
+    color: #bf360c;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #ff7043;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.1s, background 0.2s;
+}
+
+button img {
+    width: 40px;
+    height: 40px;
+    margin-right:10px;
+}
+
+button:disabled {
+    background: gray;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+/* ===== PROGRESS BARS ===== */
+.progress-container {
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #ff7043;
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.5s;
+}
+
+/* ===== PARTICLES ===== */
+.particle, .upgradeParticle, .spark {
+    position: absolute;
+    pointer-events: none;
+    font-size: 28px;
+    animation: pop 0.8s ease-out forwards;
+}
+
+@keyframes pop {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-60px) scale(1.5); }
+}
+
+@keyframes upgradePop {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-80px) scale(1.5); }
+}
+
+@keyframes sparkPop {
+    from { opacity: 1; transform: translate(0,0) scale(1); }
+    to { opacity: 0; transform: translate(calc(30px - 60px * var(--randX)), calc(30px - 60px * var(--randY))) scale(0); }
+}
+
+.upgradeParticle {
+    font-size: 28px;
+    animation: upgradePop 0.8s ease-out forwards;
+}
+
+.spark {
+    font-size: 18px;
+    animation: sparkPop 0.6s ease-out forwards;
+}
+
+/* ===== ACHIEVEMENTS ===== */
+.achievement {
+    font-size: 14px;
+    margin-top: 5px;
+    color: #2e7d32;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    opacity: 0.7;
+    font-size: 14px;
+    margin-top: 25px;
+}
+
+/* ===== UPGRADE IMAGES ===== */
+.upgrade-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+/* ===== SPATULA ANIMATION (AI CHEFS) ===== */
+/* Container sits centered over the burger, spatulas orbit relative to it */
+#spatulaContainer {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    z-index: 5;
+}
+
+.spatula {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    transform-origin: 50% 50%;
+    pointer-events: none;
+}
+
+/* ===== GOLDEN EFFECT ===== */
+.golden {
+    text-shadow: 0 0 8px gold, 0 0 16px gold;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 8px gold, 0 0 16px gold; }
+    to { text-shadow: 0 0 12px gold, 0 0 24px gold; }
+}
+
+/* ===== BOSS BAR ===== */
+.bossBarContainer {
+    width:100%;
+    background:#ddd;
+    border-radius:4px;
+    margin-top:5px;
+}
+
+.bossBar {
+    width:0%;
+    height:12px;
+    background:red;
+    border-radius:4px;
+    transition:width 0.5s;
+}
+
+/* ===== SKILL TREE ===== */
+.skillNode {
+    margin:5px;
+    padding:10px;
+    border-radius:10px;
+    background:#ffcc80;
+    cursor:pointer;
+}
+
+.skillNode.disabled {
+    background:#ddd;
+    cursor:not-allowed;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Hamburger Clicker 🍔</h1>
-<p>Capitalism but tastier.</p>
+<h1>Hamburger Clicker Deluxe 🍔</h1>
+<p>Capitalism but tasty.</p>
 
-<div id="burger" class="burger pulse" onclick="clickBurger(event)">🍔</div>
+<div class="burger" id="burger" onclick="clickBurger(event)">🍔</div>
+<div id="spatulaContainer"></div>
 
-<div class="panel">
-Burgers: <span id="burgers">0</span><br>
-Per Click: <span id="bpc">1</span><br>
-Per Second: <span id="bps">0</span><br>
-Combo: <span id="combo">0</span>x
+<div class="stats">
+    Burgers: <span id="burgers">0</span><br>
+    Per Click: <span id="bpc">1</span><br>
+    Per Second: <span id="bps">0</span>
 </div>
 
+<!-- SHOP -->
 <div class="shop">
-<h3>Shop</h3>
-<button onclick="buyClickUpgrade()">Spatula +1 click (<span id="clickCost">10</span>)</button>
-<button onclick="buyAuto()">Grill Bot +1/sec (<span id="autoCost">25</span>)</button>
-<button onclick="buyAI()">AI Chef boost (<span id="aiCost">100</span>)</button>
+<h2>🍳 Shop</h2>
+
+<p>Spatula (+1 per click)</p>
+<button onclick="buyClickUpgrade()" id="btnClick">
+    <img src="https://cdn-icons-png.flaticon.com/512/1046/1046857.png" alt="Spatula">
+    <span>Cost: <span id="clickCost">10</span> | +1 per click</span>
+</button>
+
+<p>Grill Bot (+1 per second)</p>
+<button onclick="buyAuto()" id="btnAuto">
+    <img src="https://cdn-icons-png.flaticon.com/512/3003/3003893.png" alt="Grill Bot">
+    <span>Cost: <span id="autoCost">25</span> | +1 per second</span>
+</button>
+<div class="progress-container"><div class="progress-bar" id="autoProgress"></div></div>
+
+<p>AI Chef (Boosts production)</p>
+<button onclick="buyAI()" id="btnAI">
+    <img src="https://cdn-icons-png.flaticon.com/512/919/919847.png" alt="AI Chef">
+    <span>Cost: <span id="aiCost">100</span> | +25% per auto unit</span>
+</button>
+<div class="progress-container"><div class="progress-bar golden" id="aiProgress"></div></div>
+
+<p>Golden Bun (+5 per click)</p>
+<button onclick="buyGoldenBun()" id="btnGolden">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Golden Bun">
+    <span>Cost: <span id="goldenCost">500</span> | +5 per click</span>
+</button>
+
+<p>Delivery Drone (+5 per second)</p>
+<button onclick="buyDrone()" id="btnDrone">
+    <img src="https://cdn-icons-png.flaticon.com/512/3534/3534023.png" alt="Drone">
+    <span>Cost: <span id="droneCost">1000</span> | +5 per second</span>
+</button>
+<div class="progress-container"><div class="progress-bar" id="droneProgress"></div></div>
+
+<!-- 10 more shop items -->
+<p>Turbo Grill (+10 per second)</p>
+<button onclick="buyTurboGrill()" id="btnTurboGrill">
+    <img src="https://cdn-icons-png.flaticon.com/512/3070/3070603.png" alt="Turbo Grill">
+    <span>Cost: <span id="turboGrillCost">5000</span> | +10 per second</span>
+</button>
+
+<p>Super Spatula (+3 per click)</p>
+<button onclick="buySuperSpatula()" id="btnSuperSpatula">
+    <img src="https://cdn-icons-png.flaticon.com/512/2904/2904026.png" alt="Super Spatula">
+    <span>Cost: <span id="superSpatulaCost">2500</span> | +3 per click</span>
+</button>
+
+<p>Mega Burger (+50 per click)</p>
+<button onclick="buyMegaBurger()" id="btnMegaBurger">
+    <img src="https://cdn-icons-png.flaticon.com/512/883/883112.png" alt="Mega Burger">
+    <span>Cost: <span id="megaBurgerCost">20000</span> | +50 per click</span>
+</button>
+
+<p>AI Assistant (+10% auto)</p>
+<button onclick="buyAIAssistant()" id="btnAIAssistant">
+    <img src="https://cdn-icons-png.flaticon.com/512/471/471662.png" alt="AI Assistant">
+    <span>Cost: <span id="aiAssistantCost">10000</span> | +10% per auto unit</span>
+</button>
+
+<p>Golden Grill (+25 per second)</p>
+<button onclick="buyGoldenGrill()" id="btnGoldenGrill">
+    <img src="https://cdn-icons-png.flaticon.com/512/3070/3070603.png" alt="Golden Grill">
+    <span>Cost: <span id="goldenGrillCost">40000</span> | +25 per second</span>
+</button>
+
+<p>Delivery Fleet (+25 per second)</p>
+<button onclick="buyDeliveryFleet()" id="btnDeliveryFleet">
+    <img src="https://cdn-icons-png.flaticon.com/512/3534/3534023.png" alt="Delivery Fleet">
+    <span>Cost: <span id="deliveryFleetCost">50000</span> | +25 per second</span>
+</button>
+
+<p>Mutation Serum (Random boost)</p>
+<button onclick="buyMutationSerum()" id="btnMutationSerum">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Mutation Serum">
+    <span>Cost: <span id="mutationSerumCost">150000</span> | Random bonus</span>
+</button>
+
+<p>Boss Summoner</p>
+<button onclick="buyBossSummoner()" id="btnBossSummoner">
+    <img src="https://cdn-icons-png.flaticon.com/512/919/919847.png" alt="Boss Summoner">
+    <span>Cost: <span id="bossSummonerCost">200000</span> | Summon a boss</span>
+</button>
+
+<p>Prestige Token</p>
+<button onclick="buyPrestigeToken()" id="btnPrestigeToken">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Prestige Token">
+    <span>Cost: <span id="prestigeTokenCost">500000</span> | Unlock prestige</span>
+</button>
+
+<p>Golden Mutation (+5 per click)</p>
+<button onclick="buyGoldenMutation()" id="btnGoldenMutation">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Golden Mutation">
+    <span>Cost: <span id="goldenMutationCost">750000</span> | +5 per click</span>
+</button>
+
+<!-- Extra late-game stuff -->
+<p>Quantum Grill (+100 per second)</p>
+<button onclick="buyQuantumGrill()" id="btnQuantumGrill">
+    <img src="https://cdn-icons-png.flaticon.com/512/3070/3070603.png" alt="Quantum Grill">
+    <span>Cost: <span id="quantumGrillCost">1000000</span> | +100 per second</span>
+</button>
+
+<p>Hyper Spatula (+25 per click)</p>
+<button onclick="buyHyperSpatula()" id="btnHyperSpatula">
+    <img src="https://cdn-icons-png.flaticon.com/512/2904/2904026.png" alt="Hyper Spatula">
+    <span>Cost: <span id="hyperSpatulaCost">750000</span> | +25 per click</span>
+</button>
+
+<p>Cosmic Drone Fleet (+200 per second)</p>
+<button onclick="buyCosmicDrone()" id="btnCosmicDrone">
+    <img src="https://cdn-icons-png.flaticon.com/512/3534/3534023.png" alt="Cosmic Drone">
+    <span>Cost: <span id="cosmicDroneCost">2500000</span> | +200 per second</span>
+</button>
+
+<p>Galactic Bun (+250 per click)</p>
+<button onclick="buyGalacticBun()" id="btnGalacticBun">
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Galactic Bun">
+    <span>Cost: <span id="galacticBunCost">5000000</span> | +250 per click</span>
+</button>
+
+</div>
+
+<!-- UPG
+RADES MENU -->
+<div class="upgrades">
+<h2>✨ Upgrades</h2>
+<div id="upgradeList"></div>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div class="panel">
+<h2>🏆 Achievements</h2>
+<div id="achievements"></div>
+</div>
+
+<!-- AI Daily Challenges -->
+<div class="panel">
+<h2>🧠 Daily Challenge</h2>
+<p id="dailyChallenge">Loading challenge...</p>
+<button onclick="completeChallenge()">Complete Challenge</button>
+</div>
+
+<!-- Boss -->
+<div class="panel">
+<h2>🏰 Boss Fight</h2>
+<p id="bossText">No boss currently.</p>
+<div class="bossBarContainer"><div class="bossBar" id="bossBar"></div></div>
+<button onclick="attackBoss()">Attack Boss</button>
+</div>
+
+<!-- Skill Tree -->
+<div class="skillTree">
+<h2>🧩 Skill Tree</h2>
+<div id="skillTreeNodes"></div>
 </div>
 
 <div class="panel">
-<h3>Constellation Skills</h3>
-<div class="constellation" id="constellation"></div>
+<h2>🤖 AI Chef Says</h2>
+<p id="aiText">“Click the burger.”</p>
 </div>
 
+<!-- ===== SAVE / LOAD PANEL WITH TEXTAREA ===== -->
 <div class="panel">
-<h3>Boss</h3>
-<div id="bossBox"></div>
-<button onclick="startBoss()">Spawn Boss</button>
+  <h2>💾 Save / Load</h2>
+  <button onclick="exportSave()">Export Save</button>
+  <button onclick="importSave()">Import Save</button>
+  <textarea id="saveCodeBox"
+            placeholder="Your save code will appear here (or paste here to load)"
+            style="width:100%;height:80px;margin-top:10px;border-radius:8px;padding:8px;font-size:12px;"></textarea>
+  <p style="font-size:12px;color:#6d4c41;">
+    To save: click Export, then copy the code from the box and store it somewhere safe.
+    To load: paste your code into the box and click Import.
+  </p>
+</div>
+<!-- ===== END SAVE / LOAD PANEL ===== -->
+
+<div class="footer">
+Auto-saving enabled 💾
 </div>
 
-<div class="panel">
-<h3>Save</h3>
-<button onclick="exportSave()">Export</button>
-<button onclick="importSave()">Import</button>
-</div>
+<audio id="clickSound" src="https://cdn.jsdelivr.net/gh/jshawl/AudioFX/click.mp3"></audio>
 
 <script>
+// ======= CORE GAME VARIABLES =======
+let username = prompt("Enter your username:") || "guest";
+function saveKey(key){ return username + "_" + key; }
 
-/* ---------------- ORIGINAL CORE ---------------- */
+let burgers = +localStorage.getItem(saveKey("burgers")) || 0;
+let bpc = +localStorage.getItem(saveKey("bpc")) || 1;
+let auto = +localStorage.getItem(saveKey("auto")) || 0;
+let aiLevel = +localStorage.getItem(saveKey("ai")) || 0;
+let clickCost = +localStorage.getItem(saveKey("clickCost")) || 10;
+let autoCost = +localStorage.getItem(saveKey("autoCost")) || 25;
+let aiCost = +localStorage.getItem(saveKey("aiCost")) || 100;
+let goldenBun = +localStorage.getItem(saveKey("goldenBun")) || 0;
+let goldenCost = +localStorage.getItem(saveKey("goldenCost")) || 500;
+let drone = +localStorage.getItem(saveKey("drone")) || 0;
+let droneCost = +localStorage.getItem(saveKey("droneCost")) || 1000;
 
-let burgers=+localStorage.burgers||0
-let bpc=+localStorage.bpc||1
-let auto=+localStorage.auto||0
-let aiLevel=+localStorage.ai||0
+// Additional shop items
+let turboGrill = 0, turboGrillCost=5000;
+let superSpatula=0, superSpatulaCost=2500;
+let megaBurger=0, megaBurgerCost=20000;
+let aiAssistant=0, aiAssistantCost=10000;
+let goldenGrill=0, goldenGrillCost=40000;
+let deliveryFleet=0, deliveryFleetCost=50000;
+let mutationSerum=0, mutationSerumCost=150000;
+let bossSummoner=0, bossSummonerCost=200000;
+let prestigeToken=0, prestigeTokenCost=500000;
+let goldenMutation=0, goldenMutationCost=750000;
 
-let clickCost=+localStorage.clickCost||10
-let autoCost=+localStorage.autoCost||25
-let aiCost=+localStorage.aiCost||100
+// Extra late-game stuff
+let quantumGrill=0, quantumGrillCost=1000000;
+let hyperSpatula=0, hyperSpatulaCost=750000;
+let cosmicDrone=0, cosmicDroneCost=2500000;
+let galacticBun=0, galacticBunCost=5000000;
 
-/* ---------------- NEW SYSTEMS (ADDITIVE) ---------------- */
+// Upgrades
+let upgrades = [
+    {name: "CPU Optimization", cost: 500, type: "autoMultiplier", value: 0.1, bought:false},
+    {name: "Spatula Mastery", cost: 1000, type: "bpcMultiplier", value: 0.2, bought:false},
+    {name: "Thermal Paste", cost: 5000, type: "autoMultiplier", value: 0.25, bought:false},
+    {name: "Grease Physics", cost: 7500, type: "bpcMultiplier", value: 0.3, bought:false},
+    {name: "Burger Algorithm v2", cost: 20000, type: "autoMultiplier", value: 0.5, bought:false},
+    {name: "Finger Training", cost: 25000, type: "bpcMultiplier", value: 0.5, bought:false}
+];
 
-let combo=0
-let comboTimer=0
-let prestigeStars=+localStorage.prestigeStars||0
+// Simple achievement tracking
+let achievementData = [
+    {id:"first10", text:"Flipper: Reach 10 burgers", condition:()=>burgers >= 10},
+    {id:"first1000", text:"Manager: Reach 1,000 burgers", condition:()=>burgers >= 1000},
+    {id:"clickerPro", text:"Clicker Pro: Reach 50 bpc", condition:()=> getCurrentBPC() >= 50},
+    {id:"factoryBoss", text:"Factory Boss: Reach 100 bps", condition:()=> getCurrentBPS() >= 100}
+];
+let unlockedAchievements = new Set();
 
-let constellation=[0,0,0,0,0,0]
-
-let boss=null
-
-/* ---------------- GETTERS ---------------- */
-
-function getClickPower(){
-  let base=bpc*(1+aiLevel*.2)
-  return base*(1+combo*.05)*constellationBonusMult()
+// ===== MANUAL IMPORT / EXPORT (TEXTAREA-BASED) =====
+function getSaveObject() {
+    return {
+        burgers,
+        bpc,
+        auto,
+        aiLevel,
+        clickCost,
+        autoCost,
+        aiCost,
+        goldenBun,
+        goldenCost,
+        drone,
+        droneCost,
+        turboGrill,
+        turboGrillCost,
+        superSpatula,
+        superSpatulaCost,
+        megaBurger,
+        megaBurgerCost,
+        aiAssistant,
+        aiAssistantCost,
+        goldenGrill,
+        goldenGrillCost,
+        deliveryFleet,
+        deliveryFleetCost,
+        mutationSerum,
+        mutationSerumCost,
+        bossSummoner,
+        bossSummonerCost,
+        prestigeToken,
+        prestigeTokenCost,
+        goldenMutation,
+        goldenMutationCost,
+        quantumGrill,
+        quantumGrillCost,
+        hyperSpatula,
+        hyperSpatulaCost,
+        cosmicDrone,
+        cosmicDroneCost,
+        galacticBun,
+        galacticBunCost,
+        upgradesBought: upgrades.map(u => u.bought),
+        unlockedAchievements: Array.from(unlockedAchievements),
+        skillTreeBought: (typeof skillTree !== "undefined")
+            ? skillTree.map(s => s.bought)
+            : []
+    };
 }
 
-function getBPS(){
-  return auto*(1+aiLevel*.25)*constellationBonusMult()
+function applySaveObject(data) {
+    if (!data || typeof data !== "object") return;
+
+    burgers = +data.burgers || 0;
+    bpc = +data.bpc || 1;
+    auto = +data.auto || 0;
+    aiLevel = +data.aiLevel || 0;
+    clickCost = +data.clickCost || 10;
+    autoCost = +data.autoCost || 25;
+    aiCost = +data.aiCost || 100;
+    goldenBun = +data.goldenBun || 0;
+    goldenCost = +data.goldenCost || 500;
+    drone = +data.drone || 0;
+    droneCost = +data.droneCost || 1000;
+
+    turboGrill = +data.turboGrill || 0;
+    turboGrillCost = +data.turboGrillCost || 5000;
+    superSpatula = +data.superSpatula || 0;
+    superSpatulaCost = +data.superSpatulaCost || 2500;
+    megaBurger = +data.megaBurger || 0;
+    megaBurgerCost = +data.megaBurgerCost || 20000;
+    aiAssistant = +data.aiAssistant || 0;
+    aiAssistantCost = +data.aiAssistantCost || 10000;
+    goldenGrill = +data.goldenGrill || 0;
+    goldenGrillCost = +data.goldenGrillCost || 40000;
+    deliveryFleet = +data.deliveryFleet || 0;
+    deliveryFleetCost = +data.deliveryFleetCost || 50000;
+    mutationSerum = +data.mutationSerum || 0;
+    mutationSerumCost = +data.mutationSerumCost || 150000;
+    bossSummoner = +data.bossSummoner || 0;
+    bossSummonerCost = +data.bossSummonerCost || 200000;
+    prestigeToken = +data.prestigeToken || 0;
+    prestigeTokenCost = +data.prestigeTokenCost || 500000;
+    goldenMutation = +data.goldenMutation || 0;
+    goldenMutationCost = +data.goldenMutationCost || 750000;
+
+    quantumGrill = +data.quantumGrill || 0;
+    quantumGrillCost = +data.quantumGrillCost || 1000000;
+    hyperSpatula = +data.hyperSpatula || 0;
+    hyperSpatulaCost = +data.hyperSpatulaCost || 750000;
+    cosmicDrone = +data.cosmicDrone || 0;
+    cosmicDroneCost = +data.cosmicDroneCost || 2500000;
+    galacticBun = +data.galacticBun || 0;
+    galacticBunCost = +data.galacticBunCost || 5000000;
+
+    if (Array.isArray(data.upgradesBought)) {
+        data.upgradesBought.forEach((bought, i) => {
+            if (upgrades[i]) upgrades[i].bought = !!bought;
+        });
+    }
+
+    unlockedAchievements.clear();
+    if (Array.isArray(data.unlockedAchievements)) {
+        data.unlockedAchievements.forEach(id => unlockedAchievements.add(id));
+    }
+
+    if (typeof skillTree !== "undefined" && Array.isArray(data.skillTreeBought)) {
+        data.skillTreeBought.forEach((bought, i) => {
+            if (skillTree[i]) skillTree[i].bought = !!bought;
+        });
+    }
+
+    createSpatulas();
+    updateUI();
+    aiText.textContent = "Save loaded successfully!";
 }
 
-/* ---------------- UI ---------------- */
+function exportSave() {
+    try {
+        const data = getSaveObject();
+        const json = JSON.stringify(data);
+        const code = btoa(unescape(encodeURIComponent(json)));
+        const box = document.getElementById("saveCodeBox");
+        if (box) {
+            box.value = code;
+            aiText.textContent = "Save code generated. Copy it from the box!";
+        }
+    } catch (e) {
+        alert("Export failed: " + e.message);
+    }
+}
 
+function importSave() {
+    const box = document.getElementById("saveCodeBox");
+    if (!box || !box.value.trim()) {
+        alert("Paste a save code into the box first.");
+        return;
+    }
+    const code = box.value.trim();
+    try {
+        const json = decodeURIComponent(escape(atob(code)));
+        const data = JSON.parse(json);
+        applySaveObject(data);
+    } catch (e) {
+        alert("Import failed: " + e.message);
+    }
+}
+// ===== END MANUAL IMPORT / EXPORT =====
+
+// ======= DOM ELEMENTS =======
+const burgersSpan=document.getElementById("burgers");
+const bpcSpan=document.getElementById("bpc");
+const bpsSpan=document.getElementById("bps");
+
+const clickCostSpan=document.getElementById("clickCost");
+const autoCostSpan=document.getElementById("autoCost");
+const aiCostSpan=document.getElementById("aiCost");
+const goldenCostSpan=document.getElementById("goldenCost");
+const droneCostSpan=document.getElementById("droneCost");
+
+const burgerElem=document.getElementById("burger");
+
+const autoProgress=document.getElementById("autoProgress");
+const aiProgress=document.getElementById("aiProgress");
+const droneProgress=document.getElementById("droneProgress");
+
+const aiText=document.getElementById("aiText");
+
+const upgradeList = document.getElementById("upgradeList");
+const achievementsDiv = document.getElementById("achievements");
+const dailyChallengeElem = document.getElementById("dailyChallenge");
+const bossText = document.getElementById("bossText");
+const bossBar = document.getElementById("bossBar");
+const skillTreeNodes = document.getElementById("skillTreeNodes");
+
+// ======= BOSS STATE =======
+let bossHP = 0;
+let bossMaxHP = 0;
+let bossActive = false;
+
+// ======= DAILY CHALLENGE MOCK =======
+let dailyChallenge = "Click 50 times in one session!";
+let dailyChallengeClicks = 0;
+dailyChallengeElem.textContent = dailyChallenge;
+
+// ======= HELPERS =======
+function getMultipliers() {
+    let autoMultiplier = 1;
+    let bpcMultiplier = 1;
+    upgrades.forEach(u=>{
+        if(u.bought){
+            if(u.type==="autoMultiplier") autoMultiplier+=u.value;
+            if(u.type==="bpcMultiplier") bpcMultiplier+=u.value;
+        }
+    });
+    // AI Assistant adds 10% auto each
+    autoMultiplier += aiAssistant * 0.10;
+    return {autoMultiplier, bpcMultiplier};
+}
+
+function getCurrentBPC() {
+    const { bpcMultiplier } = getMultipliers();
+    return (bpc + goldenBun*5 + superSpatula*3 + megaBurger*50 + goldenMutation*5 + hyperSpatula*25 + galacticBun*250) * bpcMultiplier;
+}
+
+function getCurrentBPS() {
+    const { autoMultiplier } = getMultipliers();
+    return (auto*(1+aiLevel*0.25) + drone*5 + turboGrill*10 + goldenGrill*25 + deliveryFleet*25 + quantumGrill*100 + cosmicDrone*200) * autoMultiplier;
+}
+
+// ======= UI UPDATE =======
 function updateUI(){
-  burgersSpan.textContent=Math.floor(burgers)
-  bpcSpan.textContent=Math.floor(getClickPower())
-  bpsSpan.textContent=Math.floor(getBPS())
-  comboSpan.textContent=combo
+    burgersSpan.textContent=Math.floor(burgers);
+    bpcSpan.textContent=Math.floor(getCurrentBPC());
+    bpsSpan.textContent=Math.floor(getCurrentBPS());
 
-  clickCostSpan.textContent=clickCost
-  autoCostSpan.textContent=autoCost
-  aiCostSpan.textContent=aiCost
+    clickCostSpan.textContent=clickCost;
+    autoCostSpan.textContent=autoCost;
+    aiCostSpan.textContent=aiCost;
+    goldenCostSpan.textContent=goldenCost;
+    droneCostSpan.textContent=droneCost;
 
-  localStorage.burgers=burgers
-  localStorage.bpc=bpc
-  localStorage.auto=auto
-  localStorage.ai=aiLevel
-  localStorage.clickCost=clickCost
-  localStorage.autoCost=autoCost
-  localStorage.aiCost=aiCost
-  localStorage.prestigeStars=prestigeStars
+    autoProgress.style.width=Math.min(auto*10,100)+"%";
+    aiProgress.style.width=Math.min(aiLevel*10,100)+"%";
+    droneProgress.style.width=Math.min(drone*10,100)+"%";
+
+    renderUpgrades();
+    renderAchievements();
+    updateSpatulas();
+    updateSkillTree();
+    saveGame();
 }
 
-/* ---------------- CLICK ---------------- */
-
+// ======= CLICK HANDLER =======
 function clickBurger(e){
-  burgers+=getClickPower()
-  spawnParticle(e.clientX,e.clientY)
+    burgers += getCurrentBPC();
+    dailyChallengeClicks++;
 
-  combo++
-  comboTimer=2
-  maybeGolden()
-  hitBoss(getClickPower())
-  updateUI()
+    spawnClickParticle(e.clientX,e.clientY);
+    spawnClickSparks(e.clientX,e.clientY);
+
+    burgerElem.classList.add("bounce");
+    setTimeout(()=>burgerElem.classList.remove("bounce"),300);
+
+    const clickSound = document.getElementById("clickSound");
+    if (clickSound) {
+        clickSound.currentTime = 0;
+        clickSound.play();
+    }
+
+    if(dailyChallengeClicks >= 50){
+        aiText.textContent = "Daily challenge complete! Bonus burgers!";
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🌟");
+        burgers += 500;
+        dailyChallengeClicks = 0;
+    }
+
+    updateUI();
 }
 
-/* ---------------- PARTICLES ---------------- */
-
-function spawnParticle(x,y){
-  const p=document.createElement("div")
-  p.className="particle"
-  p.textContent="+🍔"
-  p.style.left=x+"px"
-  p.style.top=y+"px"
-  document.body.appendChild(p)
-  setTimeout(()=>p.remove(),900)
+// ======= PARTICLES =======
+function spawnClickParticle(x,y){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=x+"px";
+    p.style.top=y+"px";
+    p.textContent="🍔";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),800);
 }
 
-/* ---------------- SHOP ---------------- */
+function spawnUpgradeParticle(x,y,emoji="✨"){
+    const p=document.createElement("div");
+    p.className="upgradeParticle";
+    p.style.left=x+"px";
+    p.style.top=y+"px";
+    p.textContent=emoji;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),800);
+}
 
+function spawnClickSparks(x, y) {
+    for(let i=0;i<6;i++){
+        const s = document.createElement("div");
+        s.className = "spark";
+        s.style.left = x + "px";
+        s.style.top = y + "px";
+        s.style.setProperty("--randX", Math.random().toString());
+        s.style.setProperty("--randY", Math.random().toString());
+        s.textContent = "✦";
+        document.body.appendChild(s);
+        setTimeout(()=>s.remove(),600);
+    }
+}
+
+function centerScreenX() {
+    return window.innerWidth/2;
+}
+function centerScreenY() {
+    return window.innerHeight/2;
+}
+
+// ======= SHOP FUNCTIONS =======
 function buyClickUpgrade(){
- if(burgers>=clickCost){
-  burgers-=clickCost
-  bpc++
-  clickCost=Math.floor(clickCost*1.7)
-  flashButton(event.target)
- }
+    if(burgers>=clickCost){
+        burgers-=clickCost;
+        bpc++;
+        clickCost=Math.floor(clickCost*1.5);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🍳");
+        updateUI();
+    }
 }
 
 function buyAuto(){
- if(burgers>=autoCost){
-  burgers-=autoCost
-  auto++
-  autoCost=Math.floor(autoCost*1.8)
-  flashButton(event.target)
- }
+    if(burgers>=autoCost){
+        burgers-=autoCost;
+        auto++;
+        autoCost=Math.floor(autoCost*1.5);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🤖");
+        updateUI();
+    }
 }
 
 function buyAI(){
- if(burgers>=aiCost){
-  burgers-=aiCost
-  aiLevel++
-  aiCost=Math.floor(aiCost*2)
-  flashButton(event.target)
- }
-}
-
-/* ---------------- GOLDEN BURGER ---------------- */
-
-function maybeGolden(){
- if(Math.random()<1/60){
-  const g=document.createElement("div")
-  g.className="golden"
-  g.textContent="🍔"
-  g.style.left=(window.innerWidth/2+Math.random()*120-60)+"px"
-  g.style.top=(window.innerHeight/2-120)+"px"
-  g.onclick=()=>{
-    goldenBoost=10
-    setTimeout(()=>goldenBoost=1,15000)
-    g.remove()
-  }
-  document.body.appendChild(g)
-  setTimeout(()=>g.remove(),6000)
- }
-}
-
-let goldenBoost=1
-
-/* ---------------- CONSTELLATION ---------------- */
-
-function constellationBonusMult(){
-  return 1 + constellation.reduce((a,b)=>a+b,0)*.15
-}
-
-function renderConstellation(){
-  const box=document.getElementById("constellation")
-  box.innerHTML=""
-  constellation.forEach((v,i)=>{
-    const s=document.createElement("div")
-    s.className="star"+(v?" on":"")
-    s.textContent="★"
-    s.onclick=()=>{
-      if(prestigeStars>0 && !constellation[i]){
-        constellation[i]=1
-        prestigeStars--
-        renderConstellation()
-      }
+    if(burgers>=aiCost){
+        burgers-=aiCost;
+        aiLevel++;
+        aiCost=Math.floor(aiCost*2);
+        createSpatulas();
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "👨‍🍳");
+        updateUI();
     }
-    box.appendChild(s)
-  })
 }
 
-/* ---------------- BOSS ---------------- */
-
-function startBoss(){
- boss={hp:5000,phase:1}
- renderBoss()
+function buyGoldenBun(){
+    if(burgers>=goldenCost){
+        burgers-=goldenCost;
+        goldenBun++;
+        goldenCost=Math.floor(goldenCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🥯");
+        updateUI();
+    }
 }
 
-function hitBoss(d){
- if(!boss)return
- boss.hp-=d
- if(boss.hp<=0){burgers+=1000; boss=null}
- renderBoss()
+function buyDrone(){
+    if(burgers>=droneCost){
+        burgers-=droneCost;
+        drone++;
+        droneCost=Math.floor(droneCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🚁");
+        updateUI();
+    }
 }
 
-function renderBoss(){
- const b=document.getElementById("bossBox")
- if(!boss){b.textContent="None";return}
- b.textContent="HP "+Math.floor(boss.hp)
+function buyTurboGrill(){
+    if(burgers>=turboGrillCost){
+        burgers-=turboGrillCost;
+        turboGrill++;
+        turboGrillCost=Math.floor(turboGrillCost*1.7);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🔥");
+        updateUI();
+    }
 }
 
-/* ---------------- EXPORT ---------------- */
-
-function exportSave(){
- prompt("Copy", btoa(JSON.stringify(localStorage)))
-}
-function importSave(){
- const d=prompt("Paste")
- if(!d)return
- Object.assign(localStorage, JSON.parse(atob(d)))
- location.reload()
+function buySuperSpatula(){
+    if(burgers>=superSpatulaCost){
+        burgers-=superSpatulaCost;
+        superSpatula++;
+        superSpatulaCost=Math.floor(superSpatulaCost*1.7);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🥄");
+        updateUI();
+    }
 }
 
-/* ---------------- HELPERS ---------------- */
-
-function flashButton(btn){
- btn.classList.add("upgradeFlash")
- setTimeout(()=>btn.classList.remove("upgradeFlash"),400)
+function buyMegaBurger(){
+    if(burgers>=megaBurgerCost){
+        burgers-=megaBurgerCost;
+        megaBurger++;
+        megaBurgerCost=Math.floor(megaBurgerCost*1.7);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🍔");
+        updateUI();
+    }
 }
 
-/* ---------------- LOOPS ---------------- */
+function buyAIAssistant(){
+    if(burgers>=aiAssistantCost){
+        burgers-=aiAssistantCost;
+        aiAssistant++;
+        aiAssistantCost=Math.floor(aiAssistantCost*1.8);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🤖");
+        updateUI();
+    }
+}
+
+function buyGoldenGrill(){
+    if(burgers>=goldenGrillCost){
+        burgers-=goldenGrillCost;
+        goldenGrill++;
+        goldenGrillCost=Math.floor(goldenGrillCost*1.8);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🥇");
+        updateUI();
+    }
+}
+
+function buyDeliveryFleet(){
+    if(burgers>=deliveryFleetCost){
+        burgers-=deliveryFleetCost;
+        deliveryFleet++;
+        deliveryFleetCost=Math.floor(deliveryFleetCost*1.8);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🚚");
+        updateUI();
+    }
+}
+
+function buyMutationSerum(){
+    if(burgers>=mutationSerumCost){
+        burgers-=mutationSerumCost;
+        mutationSerum++;
+        mutationSerumCost=Math.floor(mutationSerumCost*2);
+        const roll = Math.random();
+        if(roll<0.33){
+            bpc+=10;
+            aiText.textContent="Mutation boosted your clicks!";
+        } else if(roll<0.66){
+            auto+=5;
+            aiText.textContent="Mutation boosted your automation!";
+        } else {
+            burgers+=5000;
+            aiText.textContent="Mutation spawned free burgers!";
+        }
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🧪");
+        updateUI();
+    }
+}
+
+function buyBossSummoner(){
+    if(burgers>=bossSummonerCost && !bossActive){
+        burgers-=bossSummonerCost;
+        bossSummoner++;
+        bossSummonerCost=Math.floor(bossSummonerCost*2);
+        spawnBoss();
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🏰");
+        updateUI();
+    }
+}
+
+function buyPrestigeToken(){
+    if(burgers>=prestigeTokenCost){
+        burgers-=prestigeTokenCost;
+        prestigeToken++;
+        prestigeTokenCost=Math.floor(prestigeTokenCost*2);
+        aiText.textContent="Prestige unlocked: permanent +10% auto!";
+        upgrades.push({
+            name:"Prestige Aura "+prestigeToken,
+            cost:Infinity,
+            type:"autoMultiplier",
+            value:0.10,
+            bought:true
+        });
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "💎");
+        updateUI();
+    }
+}
+
+function buyGoldenMutation(){
+    if(burgers>=goldenMutationCost){
+        burgers-=goldenMutationCost;
+        goldenMutation++;
+        goldenMutationCost=Math.floor(goldenMutationCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "✨");
+        updateUI();
+    }
+}
+
+// Extra late-game shop buys
+function buyQuantumGrill(){
+    if(burgers>=quantumGrillCost){
+        burgers-=quantumGrillCost;
+        quantumGrill++;
+        quantumGrillCost=Math.floor(quantumGrillCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "⚛️");
+        updateUI();
+    }
+}
+
+function buyHyperSpatula(){
+    if(burgers>=hyperSpatulaCost){
+        burgers-=hyperSpatulaCost;
+        hyperSpatula++;
+        hyperSpatulaCost=Math.floor(hyperSpatulaCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "💥");
+        updateUI();
+    }
+}
+
+function buyCosmicDrone(){
+    if(burgers>=cosmicDroneCost){
+        burgers-=cosmicDroneCost;
+        cosmicDrone++;
+        cosmicDroneCost=Math.floor(cosmicDroneCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🛸");
+        updateUI();
+    }
+}
+
+function buyGalacticBun(){
+    if(burgers>=galacticBunCost){
+        burgers-=galacticBunCost;
+        galacticBun++;
+        galacticBunCost=Math.floor(galacticBunCost*2);
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🌌");
+        updateUI();
+    }
+}
+
+// ======= UPGRADE RENDERING =======
+function renderUpgrades(){
+    upgradeList.innerHTML = "";
+    upgrades.forEach((u, idx)=>{
+        const btn = document.createElement("button");
+        btn.disabled = u.bought || burgers < u.cost;
+        btn.onclick = ()=>buyUpgrade(idx);
+        btn.innerHTML = `
+            <span>${u.name}</span>
+            <span>Cost: ${u.cost} | ${u.type==="autoMultiplier"?"+Auto":" +Click"}</span>
+        `;
+        upgradeList.appendChild(btn);
+    });
+}
+
+function buyUpgrade(index){
+    const u = upgrades[index];
+    if(u.bought || burgers < u.cost) return;
+    burgers -= u.cost;
+    u.bought = true;
+    aiText.textContent = `Upgrade purchased: ${u.name}`;
+    spawnUpgradeParticle(centerScreenX(), centerScreenY(), "✨");
+    updateUI();
+}
+
+// ======= MULTIPLE SPATULAS ORBITING =======
+const spatulaContainer = document.getElementById("spatulaContainer");
+let spatulas=[];
+
+function createSpatulas(){
+    spatulas.forEach(s=>s.elem.remove());
+    spatulas=[];
+
+    for(let i=0;i<aiLevel;i++){
+        const s=document.createElement("div");
+        s.className="spatula";
+        s.textContent="🍳";
+        spatulaContainer.appendChild(s);
+        spatulas.push({
+            elem:s,
+            angle:(360/Math.max(aiLevel,1))*i,
+            radius:80 + i*15,
+            speed:1.5 + i*0.1
+        });
+    }
+}
+
+function updateSpatulas(){
+    spatulas.forEach(s=>{
+        s.angle += s.speed;
+        const rad = s.angle * (Math.PI/180);
+        const x = s.radius*Math.cos(rad);
+        const y = s.radius*Math.sin(rad);
+        s.elem.style.left = (x - 25) + "px";
+        s.elem.style.top  = (y - 25) + "px";
+    });
+
+    // occasional chef sparkle
+    if (Math.random() < 0.03 && spatulas.length > 0) {
+        const c = spatulas[Math.floor(Math.random()*spatulas.length)];
+        const rect = c.elem.getBoundingClientRect();
+        spawnClickSparks(rect.left+25, rect.top+25);
+    }
+}
+
+// ======= ACHIEVEMENTS =======
+function renderAchievements(){
+    achievementsDiv.innerHTML = "";
+    achievementData.forEach(a=>{
+        if(a.condition() && !unlockedAchievements.has(a.id)){
+            unlockedAchievements.add(a.id);
+            aiText.textContent = "Achievement unlocked: " + a.text;
+            spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🏆");
+        }
+        if(unlockedAchievements.has(a.id)){
+            const div = document.createElement("div");
+            div.className = "achievement";
+            div.textContent = a.text;
+            achievementsDiv.appendChild(div);
+        }
+    });
+}
+
+// ======= DAILY CHALLENGE BUTTON =======
+function completeChallenge(){
+    burgers += 1000;
+    aiText.textContent = "Manual challenge complete! +1000 burgers!";
+    spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🎯");
+    updateUI();
+}
+
+// ======= BOSS FIGHT =======
+function spawnBoss(){
+    bossActive = true;
+    bossMaxHP = Math.max(1000, Math.floor(getCurrentBPS()*200));
+    bossHP = bossMaxHP;
+    bossText.textContent = "A Burger Baron has appeared!";
+    bossBar.style.width = "100%";
+}
+
+function attackBoss(){
+    if(!bossActive) return;
+    const dmg = getCurrentBPC() * 2;
+    bossHP -= dmg;
+    if(bossHP <= 0){
+        bossHP = 0;
+        bossActive = false;
+        bossText.textContent = "Boss defeated! Massive burger bonus!";
+        bossBar.style.width = "0%";
+        burgers += bossMaxHP / 2;
+        spawnUpgradeParticle(centerScreenX(), centerScreenY(), "🏅");
+        updateUI();
+        return;
+    }
+    const ratio = (bossHP / bossMaxHP)*100;
+    bossBar.style.width = ratio + "%";
+}
+
+// ======= SKILL TREE (SIMPLE MOCK) =======
+let skillTree = [
+    {id:"skill1", name:"Greasy Fingers (+5% click)", type:"bpcMultiplier", value:0.05, bought:false},
+    {id:"skill2", name:"Industrial Fans (+5% auto)", type:"autoMultiplier", value:0.05, bought:false}
+];
+
+function updateSkillTree(){
+    skillTreeNodes.innerHTML = "";
+    skillTree.forEach((s, idx)=>{
+        const node = document.createElement("div");
+        node.className = "skillNode";
+        node.textContent = s.name + (s.bought ? " (learned)" : "");
+        node.onclick = ()=>buySkill(idx);
+        skillTreeNodes.appendChild(node);
+    });
+}
+
+function buySkill(index){
+    const s = skillTree[index];
+    if(s.bought || burgers < 2000) return;
+    burgers -= 2000;
+    s.bought = true;
+    upgrades.push({
+        name:"Skill: "+s.name,
+        cost:Infinity,
+        type:s.type,
+        value:s.value,
+        bought:true
+    });
+    aiText.textContent = "Skill learned: " + s.name;
+    spawnUpgradeParticle(centerScreenX(), centerScreenY(), "📘");
+    updateUI();
+}
+
+// ======= AUTO BURGERS =======
+setInterval(()=>{
+    burgers += getCurrentBPS()/10;
+    updateUI();
+},100);
+
+// Simple auto-save
+function saveGame(){
+    localStorage.setItem(saveKey("burgers"), burgers);
+    localStorage.setItem(saveKey("bpc"), bpc);
+    localStorage.setItem(saveKey("auto"), auto);
+    localStorage.setItem(saveKey("ai"), aiLevel);
+    localStorage.setItem(saveKey("clickCost"), clickCost);
+    localStorage.setItem(saveKey("autoCost"), autoCost);
+    localStorage.setItem(saveKey("aiCost"), aiCost);
+    localStorage.setItem(saveKey("goldenBun"), goldenBun);
+    localStorage.setItem(saveKey("goldenCost"), goldenCost);
+    localStorage.setItem(saveKey("drone"), drone);
+    localStorage.setItem(saveKey("droneCost"), droneCost);
+}
+
+// ======= INITIALIZATION =======
+createSpatulas();
+updateUI();
+
+// Render spatula orbit smoothly
+setInterval(updateSpatulas, 30);
+/* ================================
+   🍔 MEGA EXPANSION — ADD ONLY
+   Paste above </script>
+   ================================ */
+
+/* ---------- PLAYER TITLE BAR ---------- */
+(function(){
+  const title = document.querySelector("h1");
+  function updateTitleBar(){
+    title.textContent = `${username}'s Hamburgers 🍔 — ${Math.floor(burgers)}`;
+  }
+  const oldUpdateUI = updateUI;
+  updateUI = function(){
+    oldUpdateUI();
+    updateTitleBar();
+  };
+})();
+
+/* ---------- COMBO CLICK SYSTEM ---------- */
+let combo = 0;
+let comboTimer = 0;
+let comboMult = 1;
+
+function addCombo(){
+  combo++;
+  comboTimer = 120;
+  comboMult = 1 + combo * 0.02;
+}
 
 setInterval(()=>{
- burgers+=getBPS()*goldenBoost
- comboTimer-=1
- if(comboTimer<=0) combo=0
- updateUI()
-},1000)
+  if(comboTimer>0){ comboTimer--; }
+  else { combo=0; comboMult=1; }
+},100);
 
-/* ---------------- CLOUD / ONLINE SIM (ADDITIVE) ---------------- */
+const oldClickBurger = clickBurger;
+clickBurger = function(e){
+  addCombo();
+  burgers += getCurrentBPC() * (comboMult-1);
+  oldClickBurger(e);
+};
 
-function cloudSave(){
- localStorage.cloudSave=btoa(JSON.stringify(localStorage))
+/* ---------- GOLDEN HAMBURGER ---------- */
+function spawnGoldenBurger(){
+  const g = document.createElement("div");
+  g.textContent="🍔";
+  g.className="burger golden";
+  g.style.position="absolute";
+  const rect = burgerElem.getBoundingClientRect();
+  g.style.left = (rect.left + Math.random()*160 - 80)+"px";
+  g.style.top  = (rect.top  + Math.random()*160 - 80)+"px";
+  g.style.fontSize="80px";
+  g.onclick=()=>{
+    burgers += getCurrentBPC()*5;
+    burgers += getCurrentBPS()*3;
+    spawnUpgradeParticle(rect.left,rect.top,"🌟");
+    g.remove();
+    updateUI();
+  };
+  document.body.appendChild(g);
+  setTimeout(()=>g.remove(),4000);
 }
-function cloudLoad(){
- if(localStorage.cloudSave){
-  Object.assign(localStorage,JSON.parse(atob(localStorage.cloudSave)))
-  location.reload()
+
+setInterval(()=>{
+  if(Math.random()<1/60) spawnGoldenBurger();
+},1000);
+
+/* ---------- OFFLINE EARNINGS ---------- */
+let lastTime = +localStorage.getItem(saveKey("lastTime")) || Date.now();
+const now = Date.now();
+const diff = Math.min(3600, (now-lastTime)/1000);
+burgers += getCurrentBPS()*diff;
+localStorage.setItem(saveKey("lastTime"), now);
+
+/* ---------- PRESTIGE ASCENSION ---------- */
+let ascension = +localStorage.getItem(saveKey("ascension")) || 0;
+
+function ascend(){
+  if(burgers < 1e6) return;
+  ascension++;
+  burgers = 0;
+  bpc = 1;
+  auto = 0;
+  aiLevel = 0;
+  localStorage.setItem(saveKey("ascension"), ascension);
+  aiText.textContent = "Ascended! Permanent +25% all production.";
+}
+
+const oldGetBPC = getCurrentBPC;
+getCurrentBPC = ()=> oldGetBPC() * (1 + ascension*0.25);
+
+const oldGetBPS = getCurrentBPS;
+getCurrentBPS = ()=> oldGetBPS() * (1 + ascension*0.25);
+
+/* ---------- FACTORY CHAINS ---------- */
+let factories = 0;
+let factoriesCost = 200000;
+
+function buyFactory(){
+ if(burgers<factoriesCost) return;
+ burgers-=factoriesCost;
+ factories++;
+ factoriesCost*=2;
+}
+
+const chainOldBPS = getCurrentBPS;
+getCurrentBPS = ()=> chainOldBPS() + factories*50*(1+aiLevel);
+
+/* ---------- RAID BOSS PHASES ---------- */
+let raidHP=0, raidPhase=0;
+
+function startRaid(){
+ raidHP = getCurrentBPS()*500;
+ raidPhase=1;
+ aiText.textContent="RAID START — Phase 1";
+}
+
+function raidHit(){
+ if(raidHP<=0) return;
+ raidHP -= getCurrentBPC()*3;
+ if(raidHP < raidHP*0.66 && raidPhase===1){
+   raidPhase=2;
+   aiText.textContent="Raid Phase 2 — Faster!";
+ }
+ if(raidHP<=0){
+   burgers += 500000;
+   aiText.textContent="Raid Cleared!";
  }
 }
 
-/* ---------------- ONLINE PANEL INJECTOR ---------------- */
+/* ---------- CONSTELLATION TREE ---------- */
+let constellation = {a:false,b:false,c:false};
 
-function addOnlineButtons(){
- const panel=document.createElement("div")
- panel.className="panel"
- panel.innerHTML=`
-  <h3>Online</h3>
-  <button onclick="cloudSave()">Cloud Save</button>
-  <button onclick="cloudLoad()">Cloud Load</button>
- `
- document.body.appendChild(panel)
+function constellationMult(){
+ let m=1;
+ if(constellation.a) m+=0.15;
+ if(constellation.b) m+=0.25;
+ if(constellation.c) m+=0.40;
+ return m;
 }
 
-addOnlineButtons()
+const cOldBPS = getCurrentBPS;
+getCurrentBPS = ()=> cOldBPS()*constellationMult();
 
-/* ---------------- DOM REFS ---------------- */
+/* ---------- EXTRA SHOP INJECT ---------- */
+(function(){
+ const shop=document.querySelector(".shop");
+ function addItem(name, cost, fn){
+   const p=document.createElement("p"); p.textContent=name;
+   const b=document.createElement("button");
+   b.textContent="Buy — "+cost;
+   b.onclick=fn;
+   shop.appendChild(p);
+   shop.appendChild(b);
+ }
+ addItem("Burger Reactor +500/sec",1e7,()=>{ if(burgers>1e7){burgers-=1e7; quantumGrill+=5;}});
+ addItem("Nano Spatula +200 click",5e6,()=>{ if(burgers>5e6){burgers-=5e6; hyperSpatula+=5;}});
+})();
 
-const burgersSpan=document.getElementById("burgers")
-const bpcSpan=document.getElementById("bpc")
-const bpsSpan=document.getElementById("bps")
-const comboSpan=document.getElementById("combo")
+/* ---------- CLOUD SLOT (GitHub-safe local mirror) ---------- */
+function cloudSave(){
+ localStorage.setItem("CLOUD_SLOT", JSON.stringify(getSaveObject()));
+}
+function cloudLoad(){
+ const d=localStorage.getItem("CLOUD_SLOT");
+ if(d) applySaveObject(JSON.parse(d));
+}
 
-const clickCostSpan=document.getElementById("clickCost")
-const autoCostSpan=document.getElementById("autoCost")
-const aiCostSpan=document.getElementById("aiCost")
+/* ---------- LEADERBOARD MOCK ---------- */
+function submitLeaderboard(){
+ localStorage.setItem("LB_"+username, burgers);
+}
+function showLeaderboard(){
+ const keys=Object.keys(localStorage).filter(k=>k.startsWith("LB_"));
+ alert(keys.map(k=>k.replace("LB_","")+": "+localStorage.getItem(k)).join("\n"));
+}
 
-renderConstellation()
-updateUI()
+/* ---------- MOBILE POLISH ---------- */
+if(window.innerWidth < 600){
+ document.body.style.fontSize="18px";
+ burgerElem.style.fontSize="110px";
+}
+
+/* ---------- SAVE STAMP ---------- */
+const oldSave = saveGame;
+saveGame = function(){
+ oldSave();
+ localStorage.setItem(saveKey("lastTime"), Date.now());
+};
+
+/* ================================
+   END ADD-ONLY EXPANSION
+   ================================ */
 
 </script>
+
 </body>
 </html>
