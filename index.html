@@ -1180,33 +1180,38 @@
         setTimeout(() => popup.remove(), 12000);
     }
 
-    // -------- Click handling --------
-    function handleBurgerClick(event) {
-        const now = Date.now();
-        if (now - lastClickTime < 400) {
-            comboCount++;
-        } else {
-            comboCount = 1;
-        }
-        lastClickTime = now;
-        comboMultiplier = 1 + Math.min(comboCount - 1, 20) * 0.03;
-
-        const prod = calculateProduction();
-        const gain = prod.bpc;
-        burgers += gain;
-        totalBurgersEver += gain;
-        burgerEmojiOverlay.style.opacity = '1';
-        
-        bossRaidProgress += gain;
-
-        const rect = burgerEl.getBoundingClientRect();
-        const x = event.clientX || (rect.left + rect.width / 2);
-        const y = event.clientY || (rect.top  + rect.height / 2);
-        spawnClickParticle(x, y);
-
-        attackBossFromClicks(prod.bpc * 0.5);
-        updateDisplay();
+// -------- Click handling --------
+function handleBurgerClick(event) {
+    const now = Date.now();
+    if (now - lastClickTime < 400) {
+        comboCount++;
+    } else {
+        comboCount = 1;
     }
+    lastClickTime = now;
+    comboMultiplier = 1 + Math.min(comboCount - 1, 20) * 0.03;
+
+    const prod = calculateProduction();
+    const gain = prod.bpc;
+    burgers += gain;
+    totalBurgersEver += gain;
+    
+    // REPLACE burger with emoji (ONLY do this once)
+    if (burgerEl.innerHTML.includes('burger-bottom-bun')) {
+        burgerEl.innerHTML = '<div style="font-size: 72px; display: flex; align-items: center; justify-content: center; height: 100%;">🍔</div>';
+    }
+    
+    bossRaidProgress += gain;
+
+    const rect = burgerEl.getBoundingClientRect();
+    const x = event.clientX || (rect.left + rect.width / 2);
+    const y = event.clientY || (rect.top  + rect.height / 2);
+    spawnClickParticle(x, y);
+
+    attackBossFromClicks(prod.bpc * 0.5);
+    updateDisplay();
+}
+
 
     burgerEl.addEventListener("click", handleBurgerClick);
 
