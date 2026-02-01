@@ -143,6 +143,20 @@
             cursor: pointer;
             box-shadow: 0 14px 26px rgba(0,0,0,0.85);
             transition: transform 0.05s ease, box-shadow 0.05s ease;
+            overflow: hidden;
+        }
+
+        /* emoji overlay inside the burger */
+        #burgerEmojiOverlay {
+            position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 72px;
+        pointer-events: none;
+        opacity: 0;               /* start invisible */
+        transition: opacity 0.15s ease;
         }
 
         #burger:active {
@@ -539,6 +553,7 @@
                 <div id="burger">
                     <div class="burger-bottom-bun"></div>
                     <div class="burger-highlight"></div>
+                    <div id="burgerEmojiOverlay">🍔</div>
                 </div>
             </div>
 
@@ -941,6 +956,7 @@
     const usernameInput      = document.getElementById("usernameInput");
     const prestigeButton     = document.getElementById("prestigeButton");
     const leaderboardList    = document.getElementById("leaderboardList");
+    const burgerEmojiOverlay = document.getElementById("burgerEmojiOverlay");
 
     // Map button IDs to shop keys
     const buttonMap = {
@@ -1179,6 +1195,8 @@
         const gain = prod.bpc;
         burgers += gain;
         totalBurgersEver += gain;
+        burgerEmojiOverlay.style.opacity = '1';
+        
         bossRaidProgress += gain;
 
         const rect = burgerEl.getBoundingClientRect();
