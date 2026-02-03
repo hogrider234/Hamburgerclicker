@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Burger Capitalism - 0 burgers</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         :root {
             --bg-dark: #0f1014;
@@ -172,8 +172,8 @@
         }
 
         #spatulaOrbitCanvas {
-            width: 260px;
-            height: 260px; /* Increased height */
+            width: 340px;
+            height: 340px; /* Increased height */
             position: relative;
             display: flex;
             align-items: center;
@@ -191,8 +191,8 @@
 
         #burger {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 190px;
+            height: 190px;
             margin: 0 auto;
             cursor: pointer;
             background: none !important; /* Ensures no background colors appear */
@@ -209,7 +209,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 72px;
+        font-size: 110px;
         pointer-events: none;
         opacity: 1;               /* start invisible */
         transition: opacity 0.15s ease;
@@ -785,6 +785,126 @@
                 <button id="buyNanoSpatula" class="btn">Buy (1,500,000)</button>
             </div>
 
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Fusion Grill (+2.5K BPS)</div>
+                <div class="item-count" id="fusionGrillCount">Owned: 0</div>
+            </div>
+            <button id="buyFusionGrill" class="btn">Buy (5M)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Antimatter Bun (+1K BPC)</div>
+                <div class="item-count" id="antimatterBunCount">Owned: 0</div>
+            </div>
+            <button id="buyAntimatterBun" class="btn">Buy (15M)</button>
+        </div>
+
+        <div class="shop-item">
+             <div class="item-info">
+                <div class="item-title">Orbital Kitchen (+12K BPS)</div>
+                <div class="item-count" id="orbitalKitchenCount">Owned: 0</div>
+            </div>
+            <button id="buyOrbitalKitchen" class="btn">Buy (50M)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Time Fryer (+5K BPC)</div>
+                <div class="item-count" id="timeFryerCount">Owned: 0</div>
+            </div>
+            <button id="buyTimeFryer" class="btn">Buy (150M)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Black Hole Oven (+65K BPS)</div>
+                <div class="item-count" id="blackHoleOvenCount">Owned: 0</div>
+            </div>
+            <button id="buyBlackHoleOven" class="btn">Buy (500M)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Nebula Spatula (+25K BPC)</div>
+                <div class="item-count" id="nebulaSpatulaCount">Owned: 0</div>
+            </div>
+            <button id="buyNebulaSpatula" class="btn">Buy (1B)</button>
+        </div>
+
+        <div class="shop-item">
+        <div class="item-info">
+                <div class="item-title">Dimension Ketchup (+350K BPS)</div>
+                <div class="item-count" id="dimensionKetchupCount">Owned: 0</div>
+            </div>
+            <button id="buyDimensionKetchup" class="btn">Buy (5B)</button>
+        </div>
+
+        <div class="shop-item">
+        <div class="item-info">
+                <div class="item-title">Quantum Cow (+120K BPC)</div>
+                <div class="item-count" id="quantumCowCount">Owned: 0</div>
+            </div>
+            <button id="buyQuantumCow" class="btn">Buy (15B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Galaxy Drive-Thru (+2M BPS)</div>
+                <div class="item-count" id="galaxyDriveThruCount">Owned: 0</div>
+            </div>
+            <button id="buyGalaxyDriveThru" class="btn">Buy (50B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Star Dust Seasoning (+600K BPC)</div>
+                <div class="item-count" id="starDustSeasonCount">Owned: 0</div>
+            </div>
+            <button id="buyStarDustSeason" class="btn">Buy (120B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Void Meat (+8M BPS)</div>
+                <div class="item-count" id="voidMeatCount">Owned: 0</div>
+            </div>
+            <button id="buyVoidMeat" class="btn">Buy (250B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Infinity Grill (+2M BPC)</div>
+                <div class="item-count" id="infinityGrillCount">Owned: 0</div>
+            </div>
+            <button id="buyInfinityGrill" class="btn">Buy (450B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Universal Chef (+25M BPS)</div>
+                <div class="item-count" id="universalChefCount">Owned: 0</div>
+            </div>
+            <button id="buyUniversalChef" class="btn">Buy (650B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">Reality Bake (+10M BPC)</div>
+                <div class="item-count" id="realityBakeCount">Owned: 0</div>
+            </div>
+            <button id="buyRealityBake" class="btn">Buy (850B)</button>
+        </div>
+
+        <div class="shop-item">
+            <div class="item-info">
+                <div class="item-title">CAPITALISM GOD (+50M BPC & BPS)</div>
+                <div class="item-count" id="capitalismGodCount">Owned: 0</div>
+            </div>
+            <button id="buyCapitalismGod" class="btn">Buy (1T)</button>
+        </div>
+
             <!-- Golden spawn upgrade -->
             <div class="shop-item">
                 <div class="item-info">
@@ -792,7 +912,7 @@
                     <div class="item-count" id="goldenRadarCount">Owned: 0</div>
                     <div class="item-meta">Makes golden burgers appear more often.</div>
                 </div>
-                <button id="buyGoldenRadar" class="btn">Buy (200,000)</button>
+                <button id="buyGoldenRadar" class="btn">Buy (2,000,000)</button>
             </div>
         </div>
 
@@ -827,32 +947,7 @@
             </div>
         </div>
 
-        <div id="skillTreeSection">
-            <h3>Skill Tree</h3>
-            <div id="skillTree">
-                <div class="skill-node">
-                    <div class="item-info">
-                        <div class="item-title">Greasy Fingers (+5% click)</div>
-                        <div class="item-meta">Cost: 2000 burgers</div>
-                    </div>
-                    <button id="buySkillGreasyFingers" class="btn secondary">Unlock</button>
-                </div>
-                <div class="skill-node">
-                    <div class="item-info">
-                        <div class="item-title">Industrial Fans (+5% auto)</div>
-                        <div class="item-meta">Cost: 2000 burgers</div>
-                    </div>
-                    <button id="buySkillIndustrialFans" class="btn secondary">Unlock</button>
-                </div>
-                <div class="skill-node">
-                    <div class="item-info">
-                        <div class="item-title">Assembly Line (+10% auto)</div>
-                        <div class="item-meta">Cost: 4000 burgers</div>
-                    </div>
-                    <button id="buySkillAssemblyLine" class="btn secondary">Unlock</button>
-                </div>
-            </div>
-        </div>
+        
 
         <div id="cloudSection" style="margin-top:10px;">
             <h3>Cloud Mirror</h3>
@@ -869,7 +964,7 @@
             <div id="leaderboardList"></div>
         </div>
     </section>
-</div>
+    </div>
 
 
     <div id="skillTreeOverlay">
@@ -925,14 +1020,33 @@
         burgerReactor: {count: 0, cost: 1000000,   bpc: 0,   bps: 500, costScale: 1.30},
         nanoSpatula:   {count: 0, cost: 1500000,   bpc: 200, bps: 0,   costScale: 1.30},
         goldenRadar:   {count: 0, cost: 200000,    bpc: 0,   bps: 0,   costScale: 1.40}
+
+        // --- 15 NEW ITEMS ---
+        fusionGrill:   {count: 0, cost: 5000000,   bpc: 0,   bps: 2500,  costScale: 1.25},
+        antimatterBun: {count: 0, cost: 15000000,  bpc: 1000, bps: 0,     costScale: 1.28},
+        orbitalKitchen:{count: 0, cost: 50000000,  bpc: 0,   bps: 12000, costScale: 1.25},
+        timeFryer:     {count: 0, cost: 150000000, bpc: 5000, bps: 0,     costScale: 1.30},
+        blackHoleOven: {count: 0, cost: 500000000, bpc: 0,   bps: 65000, costScale: 1.25},
+        nebulaSpatula: {count: 0, cost: 1000000000,bpc: 25000, bps: 0,    costScale: 1.35},
+        dimensionKetchup:{count: 0, cost: 5000000000, bpc: 0, bps: 350000, costScale: 1.25},
+        quantumCow:    {count: 0, cost: 15000000000, bpc: 120000, bps: 0,  costScale: 1.30},
+        galaxyDriveThru:{count: 0, cost: 50000000000, bpc: 0, bps: 2000000, costScale: 1.25},
+        starDustSeason:{count: 0, cost: 120000000000, bpc: 600000, bps: 0, costScale: 1.35},
+        voidMeat:      {count: 0, cost: 250000000000, bpc: 0, bps: 8000000, costScale: 1.25},
+        infinityGrill: {count: 0, cost: 450000000000, bpc: 2000000, bps: 0, costScale: 1.30},
+        universalChef: {count: 0, cost: 650000000000, bpc: 0, bps: 25000000, costScale: 1.25},
+        realityBake:   {count: 0, cost: 850000000000, bpc: 10000000, bps: 0, costScale: 1.35},
+        capitalismGod: {count: 0, cost: 1000000000000, bpc: 50000000, bps: 50000000, costScale: 1.40}
     };
 
     const skillTreeState = {
         greasyFingers:   {purchased: false, cost: 2000, clickBonus: 0.05, autoBonus: 0},
         industrialFans:  {purchased: false, cost: 2000, clickBonus: 0,    autoBonus: 0.05},
-        assemblyLine:    {purchased: false, cost: 4000, clickBonus: 0,    autoBonus: 0.10}
+        assemblyLine:    {purchased: false, cost: 4000, clickBonus: 0,    autoBonus: 0.10},
+        // ADD THESE TO MATCH YOUR OVERLAY:
+        extraPickles:    {purchased: false, cost: 10000, clickBonus: 0.10, autoBonus: 0},
+        conveyorBelt:    {purchased: false, cost: 25000, clickBonus: 0,    autoBonus: 0.15}
     };
-
     const achievements = [
         {id: "burgers_100",   name: "Hundred Buns",     desc: "Reach 100 burgers.",        unlocked: false},
         {id: "burgers_1k",    name: "Thousand Stack",   desc: "Reach 1,000 burgers.",      unlocked: false},
@@ -1016,6 +1130,21 @@
         buyBurgerReactor: "burgerReactor",
         buyNanoSpatula:   "nanoSpatula",
         buyGoldenRadar:   "goldenRadar"
+        buyFusionGrill: "fusionGrill",
+        buyAntimatterBun: "antimatterBun",
+        buyOrbitalKitchen: "orbitalKitchen",
+        buyTimeFryer: "timeFryer",
+        buyBlackHoleOven: "blackHoleOven",
+        buyNebulaSpatula: "nebulaSpatula",
+        buyDimensionKetchup: "dimensionKetchup",
+        buyQuantumCow: "quantumCow",
+        buyGalaxyDriveThru: "galaxyDriveThru",
+        buyStarDustSeason: "starDustSeason",
+        buyVoidMeat: "voidMeat",
+        buyInfinityGrill: "infinityGrill",
+        buyUniversalChef: "universalChef",
+        buyRealityBake: "realityBake",
+        buyCapitalismGod: "capitalismGod"
     };
 
     const countLabelMap = {
@@ -1039,9 +1168,25 @@
         burgerReactor: document.getElementById("burgerReactorCount"),
         nanoSpatula:   document.getElementById("nanoSpatulaCount"),
         goldenRadar:   document.getElementById("goldenRadarCount")
+        fusionGrill: document.getElementById("fusionGrillCount"),
+        antimatterBun: document.getElementById("antimatterBunCount"),
+        orbitalKitchen: document.getElementById("orbitalKitchenCount"),
+        timeFryer: document.getElementById("timeFryerCount"),
+        blackHoleOven: document.getElementById("blackHoleOvenCount"),
+        nebulaSpatula: document.getElementById("nebulaSpatulaCount"),
+        dimensionKetchup: document.getElementById("dimensionKetchupCount"),
+        quantumCow: document.getElementById("quantumCowCount"),
+        galaxyDriveThru: document.getElementById("galaxyDriveThruCount"),
+        starDustSeason: document.getElementById("starDustSeasonCount"),
+        voidMeat: document.getElementById("voidMeatCount"),
+        infinityGrill: document.getElementById("infinityGrillCount"),
+        universalChef: document.getElementById("universalChefCount"),
+        realityBake: document.getElementById("realityBakeCount"),
+        capitalismGod: document.getElementById("capitalismGodCount")
     };
 
     function formatNumber(n) {
+        if(nn >= 1e12)return (n / 1e12).toFixed(2) + "T";
         if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
         if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
         if (n >= 1e3) return (n / 1e3).toFixed(2) + "K";
@@ -1243,7 +1388,6 @@ function handleBurgerClick(event) {
         attackBossFromClicks(prod.bpc * 0.5);
         updateDisplay();
     }
-
 
 
     burgerEl.addEventListener("click", handleBurgerClick);
@@ -2551,13 +2695,30 @@ function ascendPrestige() {
 
     // CRITICAL: Reset Shop Counts AND Costs
     // This was likely why it "didn't work" before
+    // CRITICAL: Reset Shop Counts AND Costs
     const originalCosts = {
         spatula: 10, grillBot: 25, aiChef: 150, goldenBun: 200, deliveryDrone: 250,
         turboGrill: 600, superSpatula: 800, megaBurger: 3000, aiAssistant: 5000,
         goldenGrill: 9000, deliveryFleet: 12000, mutationSerum: 15000, bossSummoner: 20000,
         prestigeToken: 50000, goldenMutation: 75000, quantumGrill: 150000,
         hyperSpatula: 200000, cosmicDrone: 400000, galacticBun: 600000,
-        burgerReactor: 1000000, nanoSpatula: 1500000, goldenRadar: 200000
+        burgerReactor: 1000000, nanoSpatula: 1500000, goldenRadar: 2000000,
+        // --- Added 15 New High-Tier Items ---
+        fusionGrill: 5000000,
+        antimatterBun: 15000000,
+        orbitalKitchen: 50000000,
+        timeFryer: 150000000,
+        blackHoleOven: 500000000,
+        nebulaSpatula: 1000000000,
+        dimensionKetchup: 5000000000,
+        quantumCow: 15000000000,
+        galaxyDriveThru: 50000000000,
+        starDustSeason: 120000000000,
+        voidMeat: 250000000000,
+        infinityGrill: 450000000000,
+        universalChef: 650000000000,
+        realityBake: 850000000000,
+        capitalismGod: 1000000000000
     };
 
     Object.keys(shopState).forEach(key => {
