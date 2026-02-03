@@ -118,6 +118,51 @@
             color: var(--text-main);
         }
 
+        /* Skill Tree Overlay */
+        #skillTreeOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 11, 16, 0.98);
+            z-index: 1000;
+            padding: 40px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .skill-tree-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .skill-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .skill-node-v2 {
+            width: 120px;
+            height: 120px;
+            background: #1e293b;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 11px;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .skill-node-v2.locked { filter: grayscale(1); opacity: 0.5; }
+        .skill-node-v2.bought { background: var(--accent); color: #000; }
+
         #burgerDisplayWrap {
             display: flex;
             flex-direction: column;
@@ -150,9 +195,12 @@
             height: 140px;
             margin: 0 auto;
             cursor: pointer;
-            background: none !important; /* This kills the old bun color */
+            background: none !important; /* Ensures no background colors appear */
             border: none !important;
             user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         /* emoji overlay inside the burger */
         #burgerEmojiOverlay {
@@ -509,9 +557,7 @@
         <div id="burgerDisplayWrap">
             <div id="spatulaOrbitCanvas">
                 <div id="burger">
-                    <div class="burger-bottom-bun"></div>
-                    <div class="burger-highlight"></div>
-                    <div id="burgerEmojiOverlay">🍔</div>
+                    <div id="burgerEmojiOverlay" style="opacity: 1;">🍔</div>
                 </div>
             </div>
 
@@ -543,16 +589,23 @@
                 <p>Boss raid charge from total production.</p>
             </div>
 
-            <div class="btn-row">
-                <button id="prestigeButton" class="btn disabled">Ascend (+25% global)</button>
-            </div>
-        </div>
+    <div class="btn-row">
+        <button id="prestigeButton" class="btn disabled">Ascend (+25% global)</button>
+    
+        <button class="btn" onclick="document.getElementById('skillTreeOverlay').style.display='flex'" style="background: linear-gradient(135deg, #6366f1, #4338ca); margin-left: 5px;">
+            View Skill Tree
+        </button>
+    </div>
 
-        <div class="btn-row" style="margin-top:10px;">
-            <button id="saveButton" class="btn secondary">Save</button>
-            <button id="exportButton" class="btn secondary">Export</button>
-            <button id="importButton" class="btn secondary">Import</button>
-        </div>
+    <div class="btn-row" style="margin-top:10px;">
+        <button id="saveButton" class="btn secondary">Save</button>
+        <button id="exportButton" class="btn secondary">Export</button>
+        <button id="importButton" class="btn secondary">Import</button>
+    
+        <button id="restartButton" class="btn secondary" style="background: linear-gradient(135deg, #ff4b2b, #ff416c); color: white; margin-left: auto;">
+            Restart Progress
+        </button>
+    </div>
         <textarea id="saveCode" placeholder="Exported save code appears here"></textarea>
     </section>
 
@@ -818,6 +871,29 @@
     </section>
 </div>
 
+
+    <div id="skillTreeOverlay">
+        <h1 style="color: var(--accent);">Burger Evolution Tree</h1>
+        <div class="skill-tree-container">
+            <div class="skill-row">
+                <div class="skill-node-v2" id="skill-greasyFingers" onclick="buySkill('greasyFingers')">
+                    <b>Greasy Fingers</b><br>+5% Click<br>(2k)
+                </div>
+                <div class="skill-node-v2" id="skill-industrialFans" onclick="buySkill('industrialFans')">
+                    <b>Industrial Fans</b><br>+5% Auto<br>(2k)
+                </div>
+            </div>
+        <div class="skill-row">
+            <div class="skill-node-v2" id="skill-extraPickles" onclick="buySkill('extraPickles')">
+                <b>Extra Pickles</b><br>+10% Click<br>(10k)
+            </div>
+            <div class="skill-node-v2" id="skill-conveyorBelt" onclick="buySkill('conveyorBelt')">
+                <b>Conveyor Belt</b><br>+15% Auto<br>(25k)
+            </div>
+        </div>
+    </div>
+    <button class="btn secondary" onclick="document.getElementById('skillTreeOverlay').style.display='none'">Close Tree</button>
+</div>
 <script>
 (() => {
     // -------- Core state --------
@@ -1213,44 +1289,35 @@ function handleBurgerClick(event) {
     });
 
     // -------- Prestige --------
-    function updatePrestigeButton() {
-        if (totalBurgersEver >= 10000) prestigeButton.classList.remove("disabled");
-        else prestigeButton.classList.add("disabled");
-    }
-
     function ascendPrestige() {
         if (prestigeButton.classList.contains("disabled")) return;
 
         prestigeAscensions += 1;
         prestigeMultiplier *= 1.25;
-
+    
+        // Reset stats
         burgers = 0;
         burgersPerClickBase = 1;
         burgersPerSecondBase = 0;
         bossRaidProgress = 0;
-        comboCount = 0;
-        comboMultiplier = 1;
 
-        Object.values(shopState).forEach(item => {
-            item.count = 0;
+        // FIX: Define base costs to reset the shop prices
+        const baseCosts = {
+            spatula: 10, grillBot: 25, aiChef: 150, goldenBun: 200, deliveryDrone: 250,
+            turboGrill: 600, superSpatula: 800, megaBurger: 3000, aiAssistant: 5000,
+            goldenGrill: 9000, deliveryFleet: 12000, mutationSerum: 15000, bossSummoner: 20000,
+            prestigeToken: 50000, goldenMutation: 75000, quantumGrill: 150000,
+            hyperSpatula: 200000, cosmicDrone: 400000, galacticBun: 600000,
+            burgerReactor: 1000000, nanoSpatula: 1500000, goldenRadar: 200000
+        };
+
+        // Reset shop counts AND costs
+        Object.keys(shopState).forEach(key => {
+            shopState[key].count = 0;
+            shopState[key].cost = baseCosts[key]; // This resets the price!
+            if (countLabelMap[key]) countLabelMap[key].textContent = "Owned: 0";
         });
 
-        Object.values(skillTreeState).forEach(skill => {
-            skill.purchased = false;
-        });
-
-        Object.keys(countLabelMap).forEach(key => {
-            if (countLabelMap[key]) {
-                countLabelMap[key].textContent = "Owned: 0";
-            }
-        });
-
-        nextGoldenSpawnTime = Date.now() + getRandomGoldenDelay();
-
-        const rect = burgerEl.getBoundingClientRect();
-        spawnUpgradeParticle(rect.left + rect.width / 2, rect.top);
-        spawnGoldenParticleCenter();
-        unlockAchievement("ascend_1");
         updateDisplay();
     }
 
@@ -1581,12 +1648,29 @@ function handleBurgerClick(event) {
         try {
             const list = JSON.parse(raw);
             renderLeaderboard(list);
-        } catch (e) {}
-    }
+            } catch (e) {}
+        }
 
-    window.addEventListener("beforeunload", () => {
-        saveGame();
-        updateLeaderboard();
+        window.addEventListener("beforeunload", () => {
+            saveGame();
+            updateLeaderboard();
+
+        function renderLeaderboard() {
+        const listEl = document.getElementById("leaderboardList");
+        const scores = JSON.parse(localStorage.getItem('burgerLeaderboard') || '[]');
+    
+        if (scores.length === 0) {
+            listEl.innerHTML = "<p>No entries yet!</p>";
+            return;
+        }
+
+        listEl.innerHTML = scores.map((entry, index) => `
+            <div class="leaderboard-entry" style="display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.05); padding: 4px 0;">
+                <span>${index + 1}. ${entry.name}</span>
+                <span style="color:#ffe082;">${formatNumber(entry.score)}</span>
+            </div>
+        `).join('');
+    }
     });
 
     // -------- Main loop --------
@@ -2391,7 +2475,48 @@ gameLoop = function(ts){
     oldGameLoop(ts);
 };
 
+// -------- NEW SKILL TREE SYSTEM --------
 
+// Define the skills
+const skillTreeState = {
+    greasyFingers:  {purchased: false, cost: 2000,  clickBonus: 0.05, autoBonus: 0},
+    industrialFans: {purchased: false, cost: 2000,  clickBonus: 0,    autoBonus: 0.05},
+    extraPickles:   {purchased: false, cost: 10000, clickBonus: 0.10, autoBonus: 0},
+    conveyorBelt:   {purchased: false, cost: 25000, clickBonus: 0,    autoBonus: 0.15}
+};
+
+// Function to buy skills
+window.buySkill = function(key) {
+    const skill = skillTreeState[key];
+    if (skill.purchased || burgers < skill.cost) return;
+    
+    burgers -= skill.cost;
+    skill.purchased = true;
+    
+    // Visual update
+    const el = document.getElementById('skill-' + key);
+    if (el) el.classList.add('bought');
+    
+    updateDisplay();
+};
+
+// -------- GLOBAL LEADERBOARD FIX --------
+window.updateLeaderboard = async function() {
+    const name = document.getElementById("usernameInput")?.value || "Player";
+    const score = totalBurgersEver;
+    
+    // Local leaderboard simulation (replaces the broken system)
+    let board = JSON.parse(localStorage.getItem("burger_leaderboard") || "[]");
+    board.push({name, score, id: Math.random()});
+    board.sort((a,b) => b.score - a.score);
+    board = board.slice(0, 8); // Top 8
+    localStorage.setItem("burger_leaderboard", JSON.stringify(board));
+
+    const container = document.getElementById("leaderboardList");
+    if (container) {
+        container.innerHTML = board.map(e => `<div>${e.name}: ${formatNumber(e.score)}</div>`).join("");
+    }
+};
 // -------- Final Safety Guards --------
 
 window.addEventListener("unhandledrejection", e=>{
@@ -2400,6 +2525,60 @@ window.addEventListener("unhandledrejection", e=>{
 
 console.log("Expansion Layer Part 3 Loaded");
 
+// -------- RESTART PROGRESS LOGIC --------
+document.getElementById("restartButton").addEventListener("click", () => {
+    if (confirm("Are you sure you want to RESTART? This will wipe all progress, including Prestige!")) {
+        localStorage.clear();
+        location.reload(); // Refreshes page to starting state
+    }
+});
+
+// -------- FIXED ASCENSION LOGIC --------
+function ascendPrestige() {
+    if (prestigeButton.classList.contains("disabled")) return;
+
+    // Increment Prestige
+    prestigeAscensions += 1;
+    prestigeMultiplier *= 1.10;
+
+    // Reset Core Stats
+    burgers = 0;
+    burgersPerClickBase = 1;
+    burgersPerSecondBase = 0;
+    bossRaidProgress = 0;
+    comboCount = 0;
+    comboMultiplier = 1;
+
+    // CRITICAL: Reset Shop Counts AND Costs
+    // This was likely why it "didn't work" before
+    const originalCosts = {
+        spatula: 10, grillBot: 25, aiChef: 150, goldenBun: 200, deliveryDrone: 250,
+        turboGrill: 600, superSpatula: 800, megaBurger: 3000, aiAssistant: 5000,
+        goldenGrill: 9000, deliveryFleet: 12000, mutationSerum: 15000, bossSummoner: 20000,
+        prestigeToken: 50000, goldenMutation: 75000, quantumGrill: 150000,
+        hyperSpatula: 200000, cosmicDrone: 400000, galacticBun: 600000,
+        burgerReactor: 1000000, nanoSpatula: 1500000, goldenRadar: 200000
+    };
+
+    Object.keys(shopState).forEach(key => {
+        shopState[key].count = 0;
+        shopState[key].cost = originalCosts[key] || 10;
+        if (countLabelMap[key]) {
+            countLabelMap[key].textContent = "Owned: 0";
+        }
+    });
+
+    // Reset Skills
+    Object.values(skillTreeState).forEach(skill => {
+        skill.purchased = false;
+    });
+
+    alert("You have ascended! Your production is now 10% stronger.");
+    updateDisplay();
+}
+
+// Re-bind the click event to our fixed function
+prestigeButton.onclick = ascendPrestige;
 
 init();
 })();
