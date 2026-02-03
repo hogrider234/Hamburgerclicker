@@ -2279,9 +2279,13 @@ let buyAmount = 1;
 
 function highlightBuyAmount(n,row){
     [...row.children].forEach(c=>{
-        c.style.outline = c.textContent.includes(n) ? "2px solid gold" : "none";
+        c.style.outline =
+            c.textContent === "Buy x"+n
+            ? "2px solid gold"
+            : "none";
     });
 }
+
 
 
 // -------- Bulk Cost Calculator --------
@@ -2340,9 +2344,10 @@ scheduleNextGolden = function(){
 
 // -------- Golden Popup Visual Upgrade --------
 
-const oldGoldenPopup = spawnGoldenBurgerPopup;
+const prevGoldenPopup = spawnGoldenBurgerPopup;
 spawnGoldenBurgerPopup = function(){
-    oldGoldenPopup();
+    prevGoldenPopup();
+
     const g = document.querySelector(".golden-burger-popup");
     if (!g) return;
 
