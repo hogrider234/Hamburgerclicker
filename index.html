@@ -1673,6 +1673,785 @@ function handleBurgerClick(event) {
     }
 
     init();
+/* =========================
+   EXPANSION LAYER — PART 1
+   Add-only patch — no deletions
+========================= */
+
+// ---------- Large Emoji Burger + Pulse Override ----------
+(function(){
+    const oldBurger = document.getElementById("burger");
+    if (!oldBurger) return;
+
+    const wrap = oldBurger.parentElement;
+
+    const emojiBtn = document.createElement("div");
+    emojiBtn.id = "burgerEmojiButton";
+    emojiBtn.textContent = "🍔";
+    emojiBtn.style.fontSize = "110px";
+    emojiBtn.style.cursor = "pointer";
+    emojiBtn.style.textAlign = "center";
+    emojiBtn.style.marginTop = "10px";
+    emojiBtn.style.transition = "transform 0.15s ease";
+    emojiBtn.style.animation = "burgerPulse 1.4s infinite";
+
+    const style = document.createElement("style");
+    style.innerHTML = `
+    @keyframes burgerPulse {
+        0% { transform: scale(1); filter: drop-shadow(0 0 0px gold);}
+        50% { transform: scale(1.08); filter: drop-shadow(0 0 16px gold);}
+        100% { transform: scale(1); filter: drop-shadow(0 0 0px gold);}
+    }`;
+    document.head.appendChild(style);
+
+    emojiBtn.onclick = (e)=> oldBurger.click();
+
+    wrap.appendChild(emojiBtn);
+})();
+
+
+// ---------- Buy 1 / 10 / 100 Controls ----------
+(function(){
+    const shopItems = document.querySelectorAll(".shop-item");
+    shopItems.forEach(row=>{
+        const btn = row.querySelector("button");
+        if (!btn) return;
+
+        const box = document.createElement("div");
+        box.style.display = "flex";
+        box.style.gap = "4px";
+
+        [1,10,100].forEach(q=>{
+            const b = document.createElement("button");
+            b.textContent = "×"+q;
+            b.className = "btn secondary";
+            b.style.padding="4px 6px";
+            b.onclick = (e)=>{
+                e.stopPropagation();
+                if (!btn.id) return;
+                const key = buttonMap[btn.id];
+                if (!key) return;
+
+                buyBulk(key,q,e);
+            };
+            box.appendChild(b);
+        });
+
+        row.appendChild(box);
+    });
+})();
+
+function bulkCost(item, qty){
+    let cost = 0;
+    let c = item.cost;
+    for(let i=0;i<qty;i++){
+        cost += c;
+        c = Math.ceil(c * item.costScale);
+    }
+    return cost;
+}
+
+function buyBulk(key, qty, event){
+    const item = shopState[key];
+    if (!item) return;
+
+    const total = bulkCost(item, qty);
+    if (burgers < total) return;
+
+    burgers -= total;
+
+    for(let i=0;i<qty;i++){
+        item.count++;
+        item.cost = Math.ceil(item.cost * item.costScale);
+    }
+
+    if (countLabelMap[key]) {
+        countLabelMap[key].textContent = "Owned: " + item.count;
+    }
+
+    spawnUpgradeParticle(event.clientX, event.clientY);
+    updateDisplay();
+}
+
+
+// ---------- Ascension Requirement Rewrite ----------
+let ascendRequirementBase = 25000;
+
+function getAscendRequirement(){
+    return ascendRequirementBase * Math.pow(2, prestigeAscensions);
+}
+
+function getAscendBonus(){
+    return 1 + Math.max(0.10, Math.log10(totalBurgersEver+10)/20);
+}
+
+function updatePrestigeButton(){
+    const req = getAscendRequirement();
+    if (totalBurgersEver >= req){
+        prestigeButton.classList.remove("disabled");
+    } else {
+        prestigeButton.classList.add("disabled");
+    }
+    prestigeButton.textContent =
+        "Ascend (+" + ((getAscendBonus()-1)*100).toFixed(0) +
+        "%) need " + formatNumber(req);
+}
+
+const oldAscend = ascendPrestige;
+ascendPrestige = function(){
+    if (prestigeButton.classList.contains("disabled")) return;
+
+    const mult = getAscendBonus();
+    prestigeMultiplier *= mult;
+    prestigeAscensions++;
+
+    oldAscend();
+};
+
+
+// ---------- Dual Golden Burger System ----------
+let goldenBoostActive = false;
+let goldenBoostEnd = 0;
+
+function spawnGoldenBurgerPopup(){
+    if (document.querySelector(".golden-burger-popup")) return;
+
+    const type = Math.random()<0.35 ? "boost" : "reward";
+
+    const popup = document.createElement("div");
+    popup.className = "golden-burger-popup";
+
+    if (type==="boost"){
+        popup.textContent="🚀";
+        popup.style.background="radial-gradient(circle,#bbdefb,#1e88e5)";
+    } else {
+        popup.textContent="💰";
+    }
+
+    popup.onclick = ()=>{
+        if (type==="reward"){
+            const prod = calculateProduction();
+            const reward = prod.bps*45 + prod.bpc*60 + 1000;
+            burgers += reward;
+            totalBurgersEver += reward;
+        } else {
+            goldenBoostActive = true;
+            goldenBoostEnd = Date.now()+60000;
+        }
+        popup.remove();
+    };
+
+    document.body.appendChild(popup);
+    setTimeout(()=>popup.remove(),10000);
+}
+
+
+// ---------- Golden Boost Production Hook ----------
+const oldCalc = calculateProduction;
+calculateProduction = function(){
+    const p = oldCalc();
+    if (goldenBoostActive){
+        p.bpc *= 1.25;
+        p.bps *= 1.25;
+    }
+    if (goldenBoostActive && Date.now()>goldenBoostEnd){
+        goldenBoostActive=false;
+    }
+    return p;
+};
+
+
+// ---------- Boss Types ----------
+const bossTypes = [
+    {name:"Wolf", emoji:"🐺", hp:1.2, reward:1.2},
+    {name:"Pigeon", emoji:"🕊️", hp:0.8, reward:0.8},
+    {name:"Mouse", emoji:"🐭", hp:0.6, reward:0.7},
+    {name:"Human", emoji:"🧑", hp:1.5, reward:1.5}
+];
+
+let currentBossType = null;
+
+const oldSpawnBoss = spawnBoss;
+spawnBoss = function(){
+    if (bossActive) return;
+    currentBossType = bossTypes[Math.floor(Math.random()*bossTypes.length)];
+
+    oldSpawnBoss();
+    bossMaxHealth *= currentBossType.hp;
+    bossHealth = bossMaxHealth;
+
+    bossStatusEl.textContent =
+        currentBossType.emoji+" "+currentBossType.name+" Boss!";
+};
+
+const oldBossDefeated = bossDefeated;
+bossDefeated = function(){
+    if (currentBossType){
+        burgers *= currentBossType.reward;
+    }
+    oldBossDefeated();
+};
+
+
+// ---------- Leaderboard Stability Fix ----------
+updateLeaderboard = function(){
+    const key="burgerCapitalismLeaderboard";
+    let list=[];
+    try{ list=JSON.parse(localStorage.getItem(key)||"[]"); }catch{}
+
+    const name = username || "Guest";
+
+    const now=Date.now();
+    list.push({name,score:totalBurgersEver,time:now});
+
+    const best={};
+    list.forEach(e=>{
+        if (!best[e.name] || best[e.name].score<e.score){
+            best[e.name]=e;
+        }
+    });
+
+    const final = Object.values(best)
+        .sort((a,b)=> b.score-a.score || a.time-b.time)
+        .slice(0,10);
+
+    localStorage.setItem(key, JSON.stringify(final));
+    renderLeaderboard(final);
+};
+
+
+// ---------- Bug guard fixes ----------
+window.addEventListener("error", e=>{
+    console.log("Guarded error:", e.message);
+});
+
+/* =========================
+   EXPANSION LAYER — PART 2
+   Shop + Skills + Scaling
+========================= */
+
+
+// -------- Massive Late Game Shop Ladder (data-driven) --------
+
+const lateGameShopAdditions = [
+ {key:"fusionGrill", name:"Fusion Grill", cost:2e6, bps:1200, bpc:0, scale:1.28},
+ {key:"plasmaSpatula", name:"Plasma Spatula", cost:5e6, bps:0, bpc:900, scale:1.28},
+ {key:"burgerLab", name:"Burger Lab", cost:1e7, bps:3500, bpc:0, scale:1.30},
+ {key:"darkKitchen", name:"Dark Kitchen", cost:2e7, bps:8000, bpc:0, scale:1.30},
+ {key:"quantumChef", name:"Quantum Chef", cost:5e7, bps:0, bpc:4000, scale:1.30},
+ {key:"factoryCity", name:"Factory City", cost:1e8, bps:20000, bpc:0, scale:1.32},
+ {key:"burgerAICluster", name:"AI Cluster", cost:2e8, bps:45000, bpc:0, scale:1.32},
+ {key:"orbitGrillRing", name:"Orbit Grill Ring", cost:5e8, bps:100000, bpc:0, scale:1.34},
+ {key:"moonKitchen", name:"Moon Kitchen", cost:1e9, bps:250000, bpc:0, scale:1.35},
+ {key:"planetaryChain", name:"Planetary Chain", cost:2e9, bps:600000, bpc:0, scale:1.36},
+ {key:"starForge", name:"Star Forge", cost:5e9, bps:1200000, bpc:0, scale:1.36},
+ {key:"galaxyFranchise", name:"Galaxy Franchise", cost:1e10, bps:2500000, bpc:0, scale:1.37},
+ {key:"voidKitchen", name:"Void Kitchen", cost:2e10, bps:6000000, bpc:0, scale:1.38},
+ {key:"timelineGrill", name:"Timeline Grill", cost:5e10, bps:15000000, bpc:0, scale:1.38},
+ {key:"multiverseChain", name:"Multiverse Chain", cost:1e11, bps:40000000, bpc:0, scale:1.39},
+ {key:"realityBakery", name:"Reality Bakery", cost:2e11, bps:90000000, bpc:0, scale:1.40},
+ {key:"cosmicFoundry", name:"Cosmic Foundry", cost:5e11, bps:250000000, bpc:0, scale:1.40},
+ {key:"infiniteDrive", name:"Infinite Drive", cost:1e12, bps:1000000, bpc:1000000, scale:1.42}
+];
+
+(function registerLateGameShop(){
+
+    const shopWrap = document.getElementById("shopItems");
+    if (!shopWrap) return;
+
+    lateGameShopAdditions.forEach(def=>{
+
+        if (shopState[def.key]) return;
+
+        shopState[def.key] = {
+            count:0,
+            cost:def.cost,
+            bpc:def.bpc,
+            bps:def.bps,
+            costScale:def.scale
+        };
+
+        const row = document.createElement("div");
+        row.className="shop-item";
+
+        const info = document.createElement("div");
+        info.className="item-info";
+
+        const title = document.createElement("div");
+        title.className="item-title";
+        title.textContent = def.name +
+            (def.bps? " (+"+formatNumber(def.bps)+" /s)" :
+             " (+"+formatNumber(def.bpc)+" /click)");
+
+        const count = document.createElement("div");
+        count.className="item-count";
+        count.textContent="Owned: 0";
+
+        info.appendChild(title);
+        info.appendChild(count);
+
+        const btn = document.createElement("button");
+        const btnId = "buy_"+def.key;
+        btn.id = btnId;
+        btn.className="btn";
+        btn.textContent="Buy ("+formatNumber(def.cost)+")";
+
+        buttonMap[btnId]=def.key;
+        countLabelMap[def.key]=count;
+
+        btn.onclick = e=>{
+            if (btn.classList.contains("disabled")) return;
+            buyItem(def.key,e);
+        };
+
+        row.appendChild(info);
+        row.appendChild(btn);
+
+        shopWrap.appendChild(row);
+    });
+
+})();
+
+
+// -------- Extended Skill Tree --------
+
+const extraSkills = [
+ {id:"comboMastery", name:"Combo Mastery", cost:15000, click:0.15, auto:0},
+ {id:"goldenLuck", name:"Golden Luck", cost:20000, click:0, auto:0},
+ {id:"bossBreaker", name:"Boss Breaker", cost:30000, click:0.20, auto:0},
+ {id:"autoOverdrive", name:"Auto Overdrive", cost:45000, click:0, auto:0.20},
+ {id:"ascendAmplifier", name:"Ascend Amplifier", cost:60000, click:0, auto:0},
+ {id:"goldenDuration", name:"Golden Duration", cost:80000, click:0, auto:0}
+];
+
+extraSkills.forEach(s=>{
+    skillTreeState[s.id]={
+        purchased:false,
+        cost:s.cost,
+        clickBonus:s.click,
+        autoBonus:s.auto
+    };
+});
+
+(function buildExtraSkillUI(){
+
+    const tree = document.getElementById("skillTree");
+    if (!tree) return;
+
+    extraSkills.forEach(s=>{
+        const row = document.createElement("div");
+        row.className="skill-node";
+
+        const info = document.createElement("div");
+        info.className="item-info";
+
+        const t = document.createElement("div");
+        t.className="item-title";
+        t.textContent = s.name;
+
+        const m = document.createElement("div");
+        m.className="item-meta";
+        m.textContent = "Cost: "+formatNumber(s.cost);
+
+        info.appendChild(t);
+        info.appendChild(m);
+
+        const btn = document.createElement("button");
+        btn.className="btn secondary";
+        btn.textContent="Unlock";
+
+        btn.onclick = ()=> buySkill(s.id);
+
+        row.appendChild(info);
+        row.appendChild(btn);
+        tree.appendChild(row);
+    });
+
+})();
+
+
+// -------- Skill Hooks --------
+
+const oldComboCapCalc = comboMultiplier;
+function getComboCap(){
+    return skillTreeState.comboMastery?.purchased ? 60 : 20;
+}
+
+const oldHandleClick = handleBurgerClick;
+handleBurgerClick = function(e){
+    oldHandleClick(e);
+    comboMultiplier = 1 + Math.min(comboCount-1, getComboCap())*0.03;
+};
+
+
+// Golden luck skill affects spawn timing
+const oldGetGoldenDelay = getRandomGoldenDelay;
+getRandomGoldenDelay = function(){
+    let d = oldGetGoldenDelay();
+    if (skillTreeState.goldenLuck?.purchased) d *= 0.7;
+    return d;
+};
+
+
+// Boss breaker skill → more click damage
+const oldAttackBoss = attackBossFromClicks;
+attackBossFromClicks = function(dmg){
+    if (skillTreeState.bossBreaker?.purchased){
+        dmg *= 1.5;
+    }
+    oldAttackBoss(dmg);
+};
+
+
+// Ascend amplifier skill
+const oldGetAscendBonusFn = getAscendBonus;
+getAscendBonus = function(){
+    let b = oldGetAscendBonusFn();
+    if (skillTreeState.ascendAmplifier?.purchased){
+        b += 0.05;
+    }
+    return b;
+};
+
+
+// Golden duration skill
+const oldSpawnGolden = spawnGoldenBurgerPopup;
+spawnGoldenBurgerPopup = function(){
+    oldSpawnGolden();
+    if (skillTreeState.goldenDuration?.purchased){
+        goldenBoostEnd += 30000;
+    }
+};
+
+
+// -------- Production Softcap Balancer --------
+
+function lateGameSoftcap(x){
+    if (x < 1e7) return x;
+    return 1e7 * Math.pow(x/1e7, 0.92);
+}
+
+const oldAutoTickFn = autoTick;
+autoTick = function(dt){
+    const before = burgers;
+    oldAutoTickFn(dt);
+    const gained = burgers - before;
+    const adjusted = lateGameSoftcap(gained);
+    burgers = before + adjusted;
+};
+
+
+// -------- Number Formatting Upgrade --------
+
+const suffixes = [
+ "","K","M","B","T","Qa","Qi","Sx","Sp","Oc","No","Dc"
+];
+
+formatNumber = function(n){
+    if (n<1000) return Math.floor(n).toString();
+    let i = Math.floor(Math.log10(n)/3);
+    i = Math.min(i, suffixes.length-1);
+    return (n/Math.pow(1000,i)).toFixed(2)+suffixes[i];
+};
+
+
+// -------- Shop Button Refresh Hook --------
+
+const oldUpdateShopButtons = updateShopButtons;
+updateShopButtons = function(){
+    oldUpdateShopButtons();
+    Object.entries(buttonMap).forEach(([id,key])=>{
+        const btn=document.getElementById(id);
+        const item=shopState[key];
+        if (!btn||!item) return;
+        btn.textContent="Buy ("+formatNumber(item.cost)+")";
+    });
+};
+
+
+// -------- Save Compatibility Patch --------
+
+const oldSerialize = serializeState;
+serializeState = function(){
+    const s = oldSerialize();
+    s.lateGameShop = lateGameShopAdditions.map(d=>({
+        key:d.key,
+        count:shopState[d.key]?.count||0,
+        cost:shopState[d.key]?.cost||d.cost
+    }));
+    return s;
+};
+
+const oldDeserialize = deserializeState;
+deserializeState = function(data){
+    oldDeserialize(data);
+    if (data.lateGameShop){
+        data.lateGameShop.forEach(e=>{
+            if (shopState[e.key]){
+                shopState[e.key].count=e.count;
+                shopState[e.key].cost=e.cost;
+                if (countLabelMap[e.key]){
+                    countLabelMap[e.key].textContent="Owned: "+e.count;
+                }
+            }
+        });
+    }
+};
+
+
+/* =========================
+   EXPANSION LAYER — PART 3
+   Visual + UI + Final Systems
+========================= */
+
+
+// -------- Big Emoji Burger + Pulse Fix --------
+
+(function upgradeBurgerVisual(){
+
+    const btn = document.getElementById("burgerButton");
+    if (!btn) return;
+
+    btn.textContent = "🍔";
+    btn.style.fontSize = "110px";
+    btn.style.lineHeight = "1";
+    btn.style.borderRadius = "24px";
+    btn.style.background = "none";
+    btn.style.boxShadow = "none";
+
+    if (!document.getElementById("burgerPulseStyle")){
+        const s = document.createElement("style");
+        s.id="burgerPulseStyle";
+        s.textContent = `
+        @keyframes burgerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+        #burgerButton {
+            animation: burgerPulse 1.2s infinite;
+        }
+        `;
+        document.head.appendChild(s);
+    }
+
+})();
+
+
+// -------- Click Feedback Scale (fix missing pulse feedback) --------
+
+const oldClickAnim = spawnClickText;
+spawnClickText = function(x,y,val){
+    oldClickAnim(x,y,val);
+    const b = document.getElementById("burgerButton");
+    if (!b) return;
+    b.style.transform="scale(1.18)";
+    setTimeout(()=>b.style.transform="scale(1)",120);
+};
+
+
+// -------- Buy 1 / 10 / 100 System --------
+
+let buyAmount = 1;
+
+(function buildBuyAmountUI(){
+
+    const shop = document.getElementById("shopPanel");
+    if (!shop) return;
+
+    const row = document.createElement("div");
+    row.style.display="flex";
+    row.style.gap="6px";
+    row.style.marginBottom="8px";
+
+    [1,10,100].forEach(n=>{
+        const b=document.createElement("button");
+        b.className="btn secondary";
+        b.textContent="Buy x"+n;
+        b.onclick=()=>{ buyAmount=n; highlightBuyAmount(n,row); };
+        row.appendChild(b);
+    });
+
+    shop.prepend(row);
+    highlightBuyAmount(1,row);
+
+})();
+
+function highlightBuyAmount(n,row){
+    [...row.children].forEach(c=>{
+        c.style.outline = c.textContent.includes(n) ? "2px solid gold" : "none";
+    });
+}
+
+
+// -------- Bulk Cost Calculator --------
+
+function bulkCost(item, amount){
+    let total=0;
+    let c=item.cost;
+    for (let i=0;i<amount;i++){
+        total+=c;
+        c*=item.costScale||1.15;
+    }
+    return total;
+}
+
+
+// -------- Patch buyItem for bulk --------
+
+const oldBuyItemFn = buyItem;
+buyItem = function(key,e){
+    const item = shopState[key];
+    if (!item) return;
+
+    const amt = buyAmount||1;
+    const cost = bulkCost(item, amt);
+    if (burgers < cost) return;
+
+    burgers -= cost;
+
+    for (let i=0;i<amt;i++){
+        item.count++;
+        item.cost *= item.costScale||1.15;
+    }
+
+    if (countLabelMap[key]){
+        countLabelMap[key].textContent="Owned: "+item.count;
+    }
+
+    updateShopButtons();
+};
+
+
+
+// -------- Golden Burger Spawn Tuning --------
+
+const oldGoldenScheduler = scheduleNextGolden;
+scheduleNextGolden = function(){
+    // rarer base
+    const base = 45000 + Math.random()*90000;
+
+    // skill bonus still applies
+    const mult = skillTreeState.goldenLuck?.purchased ? 0.75 : 1;
+
+    setTimeout(spawnGoldenBurgerPopup, base*mult);
+};
+
+
+// -------- Golden Popup Visual Upgrade --------
+
+const oldGoldenPopup = spawnGoldenBurgerPopup;
+spawnGoldenBurgerPopup = function(){
+    oldGoldenPopup();
+    const g = document.querySelector(".golden-burger-popup");
+    if (!g) return;
+
+    g.style.fontSize="42px";
+    g.style.boxShadow="0 0 18px gold";
+    g.style.border="3px solid #ffd54f";
+};
+
+
+// -------- Ascension Requirement Gate --------
+
+function getAscendRequirement(){
+    // scales with progress — prevents early spam
+    return Math.max(1e5, Math.pow(totalBurgersEver+1,0.72));
+}
+
+const oldUpdatePrestigeBtn2 = updatePrestigeButton;
+updatePrestigeButton = function(){
+    oldUpdatePrestigeBtn2();
+    const req = getAscendRequirement();
+    prestigeButton.title = "Need "+formatNumber(req)+" lifetime burgers";
+};
+
+
+// -------- Ascension Reset Safety --------
+
+const oldAscend2 = ascendPrestige;
+ascendPrestige = function(){
+    if (totalBurgersEver < getAscendRequirement()) return;
+    updateLeaderboard();
+    oldAscend2();
+};
+
+
+// -------- Boss Reward Balance --------
+
+const oldBossReward = bossDefeated;
+bossDefeated = function(){
+    const before = burgers;
+    oldBossReward();
+    const gain = burgers-before;
+
+    // clamp extreme multipliers
+    if (gain > calculateProduction().bps*600){
+        burgers = before + calculateProduction().bps*600;
+    }
+};
+
+
+// -------- Leaderboard Auto Refresh --------
+
+setInterval(()=>{
+    if (document.getElementById("leaderboardPanel")?.offsetParent!==null){
+        updateLeaderboard();
+    }
+}, 30000);
+
+
+// -------- UI Number Refresh Stability --------
+
+const oldUpdateUIFn = updateUI;
+updateUI = function(){
+    oldUpdateUIFn();
+    const el=document.getElementById("burgerCount");
+    if (el) el.textContent = formatNumber(burgers);
+};
+
+
+// -------- Combo Drift Fix --------
+
+setInterval(()=>{
+    if (comboCount<=0){
+        comboCount=0;
+        comboMultiplier=1;
+    }
+},2000);
+
+
+// -------- Golden Boost Expire Guard --------
+
+setInterval(()=>{
+    if (goldenBoostActive && Date.now()>goldenBoostEnd){
+        goldenBoostActive=false;
+    }
+},1000);
+
+
+// -------- Animation Frame Leak Guard --------
+
+let lastFrame=0;
+const oldGameLoop = gameLoop;
+gameLoop = function(ts){
+    if (ts-lastFrame>1000){
+        lastFrame=ts;
+    }
+    oldGameLoop(ts);
+};
+
+
+// -------- Final Safety Guards --------
+
+window.addEventListener("unhandledrejection", e=>{
+    console.log("Promise guarded:", e.reason);
+});
+
+console.log("Expansion Layer Part 3 Loaded");
+
+
+init();
 })();
 </script>
 </body>
