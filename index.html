@@ -449,13 +449,31 @@ c
         }
 
         @media (max-width: 600px) {
-            #burger {
-                width: 400px;
-                height: 400px;
-            }
-            #spatulaOrbitCanvas {
-                width: 450px;
-                height: 450px;
+        #spatulaOrbitCanvas {
+            position: relative;
+            width: 450px;  /* Increased size */
+            height: 450px; /* Increased size */
+            margin: 10px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #burger {
+            width: 280px;  /* Increased size */
+            height: 280px; /* Increased size */
+            background: radial-gradient(circle at 30% 30%, #ffca28, #ff8f00);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px; /* Makes the emoji bigger */
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.05s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
             }
             h1 {
                 font-size: 19px;
@@ -537,309 +555,8 @@ c
     <section id="shopSection">
         <h2>Shop</h2>
         <p>Invest in better tools, automation, and late‑game reactors.</p>
-
         <div id="shopItems">
-            <!-- existing and new shop items -->
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Spatula (+1 per click)</div>
-                    <div class="item-count" id="spatulaCount">Owned: 0</div>
-                </div>
-                <button id="buySpatula" class="btn">Buy (10)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Grill Bot (+1 per second)</div>
-                    <div class="item-count" id="grillBotCount">Owned: 0</div>
-                </div>
-                <button id="buyGrillBot" class="btn">Buy (25)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">AI Chef (Boosts production)</div>
-                    <div class="item-count" id="aiChefCount">Owned: 0</div>
-                </div>
-                <button id="buyAIChef" class="btn">Buy (150)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Golden Bun (+5 per click)</div>
-                    <div class="item-count" id="goldenBunCount">Owned: 0</div>
-                </div>
-                <button id="buyGoldenBun" class="btn">Buy (200)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Delivery Drone (+5 per second)</div>
-                    <div class="item-count" id="deliveryDroneCount">Owned: 0</div>
-                </div>
-                <button id="buyDeliveryDrone" class="btn">Buy (250)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Turbo Grill (+10 per second)</div>
-                    <div class="item-count" id="turboGrillCount">Owned: 0</div>
-                </div>
-                <button id="buyTurboGrill" class="btn">Buy (600)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Super Spatula (+3 per click)</div>
-                    <div class="item-count" id="superSpatulaCount">Owned: 0</div>
-                </div>
-                <button id="buySuperSpatula" class="btn">Buy (800)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Mega Burger (+50 per click)</div>
-                    <div class="item-count" id="megaBurgerCount">Owned: 0</div>
-                </div>
-                <button id="buyMegaBurger" class="btn">Buy (3,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">AI Assistant (+10% auto)</div>
-                    <div class="item-count" id="aiAssistantCount">Owned: 0</div>
-                </div>
-                <button id="buyAIAssistant" class="btn">Buy (5,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Golden Grill (+25 per second)</div>
-                    <div class="item-count" id="goldenGrillCount">Owned: 0</div>
-                </div>
-                <button id="buyGoldenGrill" class="btn">Buy (9,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Delivery Fleet (+25 per second)</div>
-                    <div class="item-count" id="deliveryFleetCount">Owned: 0</div>
-                </div>
-                <button id="buyDeliveryFleet" class="btn">Buy (12,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Mutation Serum (Random boost)</div>
-                    <div class="item-count" id="mutationSerumCount">Owned: 0</div>
-                </div>
-                <button id="buyMutationSerum" class="btn">Buy (15,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Boss Summoner</div>
-                    <div class="item-meta">Summon a boss immediately</div>
-                </div>
-                <button id="buyBossSummoner" class="btn">Buy (20,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Prestige Token</div>
-                    <div class="item-meta">Boost permanent multiplier</div>
-                </div>
-                <button id="buyPrestigeToken" class="btn">Buy (50,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Golden Mutation (+5 per click)</div>
-                    <div class="item-count" id="goldenMutationCount">Owned: 0</div>
-                </div>
-                <button id="buyGoldenMutation" class="btn">Buy (75,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Quantum Grill (+100 per second)</div>
-                    <div class="item-count" id="quantumGrillCount">Owned: 0</div>
-                </div>
-                <button id="buyQuantumGrill" class="btn">Buy (150,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Hyper Spatula (+25 per click)</div>
-                    <div class="item-count" id="hyperSpatulaCount">Owned: 0</div>
-                </div>
-                <button id="buyHyperSpatula" class="btn">Buy (200,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Cosmic Drone Fleet (+200 per second)</div>
-                    <div class="item-count" id="cosmicDroneCount">Owned: 0</div>
-                </div>
-                <button id="buyCosmicDrone" class="btn">Buy (400,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Galactic Bun (+250 per click)</div>
-                    <div class="item-count" id="galacticBunCount">Owned: 0</div>
-                </div>
-                <button id="buyGalacticBun" class="btn">Buy (600,000)</button>
-            </div>
-
-            <!-- Late‑game items -->
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Burger Reactor (+500 per second)</div>
-                    <div class="item-count" id="burgerReactorCount">Owned: 0</div>
-                </div>
-                <button id="buyBurgerReactor" class="btn">Buy (1,000,000)</button>
-            </div>
-
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Nano Spatula (+200 per click)</div>
-                    <div class="item-count" id="nanoSpatulaCount">Owned: 0</div>
-                </div>
-                <button id="buyNanoSpatula" class="btn">Buy (1,500,000)</button>
-            </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Fusion Grill (+2.5K BPS)</div>
-                <div class="item-count" id="fusionGrillCount">Owned: 0</div>
-            </div>
-            <button id="buyFusionGrill" class="btn">Buy (5M)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Antimatter Bun (+1K BPC)</div>
-                <div class="item-count" id="antimatterBunCount">Owned: 0</div>
-            </div>
-            <button id="buyAntimatterBun" class="btn">Buy (15M)</button>
-        </div>
-
-        <div class="shop-item">
-             <div class="item-info">
-                <div class="item-title">Orbital Kitchen (+12K BPS)</div>
-                <div class="item-count" id="orbitalKitchenCount">Owned: 0</div>
-            </div>
-            <button id="buyOrbitalKitchen" class="btn">Buy (50M)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Time Fryer (+5K BPC)</div>
-                <div class="item-count" id="timeFryerCount">Owned: 0</div>
-            </div>
-            <button id="buyTimeFryer" class="btn">Buy (150M)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Black Hole Oven (+65K BPS)</div>
-                <div class="item-count" id="blackHoleOvenCount">Owned: 0</div>
-            </div>
-            <button id="buyBlackHoleOven" class="btn">Buy (500M)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Nebula Spatula (+25K BPC)</div>
-                <div class="item-count" id="nebulaSpatulaCount">Owned: 0</div>
-            </div>
-            <button id="buyNebulaSpatula" class="btn">Buy (1B)</button>
-        </div>
-
-        <div class="shop-item">
-        <div class="item-info">
-                <div class="item-title">Dimension Ketchup (+350K BPS)</div>
-                <div class="item-count" id="dimensionKetchupCount">Owned: 0</div>
-            </div>
-            <button id="buyDimensionKetchup" class="btn">Buy (5B)</button>
-        </div>
-
-        <div class="shop-item">
-        <div class="item-info">
-                <div class="item-title">Quantum Cow (+120K BPC)</div>
-                <div class="item-count" id="quantumCowCount">Owned: 0</div>
-            </div>
-            <button id="buyQuantumCow" class="btn">Buy (15B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Galaxy Drive-Thru (+2M BPS)</div>
-                <div class="item-count" id="galaxyDriveThruCount">Owned: 0</div>
-            </div>
-            <button id="buyGalaxyDriveThru" class="btn">Buy (50B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Star Dust Seasoning (+600K BPC)</div>
-                <div class="item-count" id="starDustSeasonCount">Owned: 0</div>
-            </div>
-            <button id="buyStarDustSeason" class="btn">Buy (120B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Void Meat (+8M BPS)</div>
-                <div class="item-count" id="voidMeatCount">Owned: 0</div>
-            </div>
-            <button id="buyVoidMeat" class="btn">Buy (250B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Infinity Grill (+2M BPC)</div>
-                <div class="item-count" id="infinityGrillCount">Owned: 0</div>
-            </div>
-            <button id="buyInfinityGrill" class="btn">Buy (450B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Universal Chef (+25M BPS)</div>
-                <div class="item-count" id="universalChefCount">Owned: 0</div>
-            </div>
-            <button id="buyUniversalChef" class="btn">Buy (650B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">Reality Bake (+10M BPC)</div>
-                <div class="item-count" id="realityBakeCount">Owned: 0</div>
-            </div>
-            <button id="buyRealityBake" class="btn">Buy (850B)</button>
-        </div>
-
-        <div class="shop-item">
-            <div class="item-info">
-                <div class="item-title">CAPITALISM GOD (+50M BPC & BPS)</div>
-                <div class="item-count" id="capitalismGodCount">Owned: 0</div>
-            </div>
-            <button id="buyCapitalismGod" class="btn">Buy (1T)</button>
-        </div>
-
-            <!-- Golden spawn upgrade -->
-            <div class="shop-item">
-                <div class="item-info">
-                    <div class="item-title">Golden Radar (+10% golden spawn)</div>
-                    <div class="item-count" id="goldenRadarCount">Owned: 0</div>
-                    <div class="item-meta">Makes golden burgers appear more often.</div>
-                </div>
-                <button id="buyGoldenRadar" class="btn">Buy (2,000,000)</button>
-            </div>
-        </div>
-
+           </div> 
         <p id="goldenUpgradeHint">Golden burgers spawn randomly over time; Radar upgrades speed that up.</p>
     </section>
 
@@ -1153,6 +870,37 @@ c
 
         const finalClick = baseClick * comboMultiplier;
         return {bpc: finalClick, bps: baseAuto};
+    }
+
+    function renderShop() {
+        const shopContainer = document.getElementById("shopItems");
+        if (!shopContainer) return;
+    
+        shopContainer.innerHTML = ""; 
+
+        // Sorts the items by cost
+        const sortedKeys = Object.keys(shopState).sort((a, b) => {
+            return shopState[a].cost - shopState[b].cost;
+        });
+
+        sortedKeys.forEach(key => {
+            const item = shopState[key];
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "shop-item";
+        
+            // This makes "fusionGrill" look like "Fusion Grill"
+            const displayName = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+
+            itemDiv.innerHTML = `
+                <div class="item-info">
+                    <div class="item-title">${displayName}</div>
+                    <div class="item-count" id="${key}Count">Owned: ${item.count}</div>
+                    <div class="item-meta">Cost: ${item.cost.toLocaleString()}</div>
+                </div>
+                <button class="btn" onclick="buyItem('${key}')">Buy</button>
+            `;
+            shopContainer.appendChild(itemDiv);
+        });
     }
 
     function updateDisplay() {
@@ -2554,19 +2302,27 @@ const skillTreeState = {
     conveyorBelt:   {purchased: false, cost: 25000, clickBonus: 0,    autoBonus: 0.15}
 };
 
-// Function to buy skills
-window.buySkill = function(key) {
-    const skill = skillTreeState[key];
-    if (skill.purchased || burgers < skill.cost) return;
-    
-    burgers -= skill.cost;
-    skill.purchased = true;
-    
-    // Visual update
-    const el = document.getElementById('skill-' + key);
-    if (el) el.classList.add('bought');
-    
-    updateDisplay();
+// Add this inside your script tag
+window.buySkill = function(skillKey) {
+    const skill = skillTreeState[skillKey];
+    if (skill.purchased) return;
+
+    if (burgers >= skill.cost) {
+        burgers -= skill.cost;
+        skill.purchased = true;
+        
+        // Change the look of the button to show it's bought
+        const el = document.getElementById(`skill-${skillKey}`);
+        if (el) {
+            el.style.background = "linear-gradient(135deg, #4ade80, #22c55e)";
+            el.innerText = "UNLOCKED";
+        }
+        
+        updateDisplay();
+        alert("Evolution Complete!");
+    } else {
+        alert("Need more burgers!");
+    }
 };
 
 // -------- GLOBAL LEADERBOARD FIX --------
