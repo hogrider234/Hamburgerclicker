@@ -142,83 +142,7 @@
             gap: 30px;
             justify-content: center;
         }
-
-        .skill-node-v2 {
-            width: 120px;
-            height: 120px;
-            background: #1e293b;
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 11px;
-            text-align: center;
-            padding: 10px;
-        }
-
-        .skill-node-v2.locked { filter: grayscale(1); opacity: 0.5; }
-        .skill-node-v2.bought { background: var(--accent); color: #000; }
-
-        #burgerDisplayWrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0; /* Adds space at the top and bottom */
-            margin-top: 10px;
-        }
-
-        #spatulaOrbitCanvas {
-            width: 340px;
-            height: 340px; /* Increased height */
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px; /* Pushes the burger away from the burgerCountEl */
-        }
-
-        #burgerCount {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 10px; /* Space between the text and the burger */
-            z-index: 10; /* Ensures text stays on top if things move */
-        }
-
-
-        #burger {
-            position: relative;
-            width: 190px;
-            height: 190px;
-            margin: 0 auto;
-            cursor: pointer;
-            background: none !important; /* Ensures no background colors appear */
-            border: none !important;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        /* emoji overlay inside the burger */
-        #burgerEmojiOverlay {
-            position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 110px;
-        pointer-events: none;
-        opacity: 1;               /* start invisible */
-        transition: opacity 0.15s ease;
-        }
-
-        #burger:active {
-            transform: scale(0.97) translateY(2px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.85);
-        }
+c
 
         .orbit-spatula {
             width: 26px;
@@ -1361,33 +1285,34 @@
 
 // -------- Click handling --------
 function handleBurgerClick(event) {
-        const now = Date.now();
-        if (now - lastClickTime < 400) {
+    const now = Date.now();
+    
+    // Combo Logic
+    if (now - lastClickTime < 400) {
         comboCount++;
-        } else {
+    } else {
         comboCount = 1;
-        }
-        lastClickTime = now;
-        comboMultiplier = 1 + Math.min(comboCount - 1, 20) * 0.03;
-
-        const prod = calculateProduction();
-        const gain = prod.bpc;
-        burgers += gain;
-        totalBurgersEver += gain;
-    
-        // REPLACE burger with emoji AND kill CSS pseudo-elements
-        burgerEl.classList.add('emoji-mode');
-    
-        bossRaidProgress += gain;
-
-        const rect = burgerEl.getBoundingClientRect();
-        const x = event.clientX || (rect.left + rect.width / 2);
-        const y = event.clientY || (rect.top  + rect.height / 2);
-        spawnClickParticle(x, y);
-
-        attackBossFromClicks(prod.bpc * 0.5);
-        updateDisplay();
     }
+    lastClickTime = now;
+    comboMultiplier = 1 + Math.min(comboCount - 1, 20) * 0.03;
+
+    // Calculate Gains
+    const prod = calculateProduction();
+    const gain = prod.bpc;
+    burgers += gain;
+    totalBurgersEver += gain;
+    bossRaidProgress += gain;
+
+    // Particles
+    const rect = burgerEl.getBoundingClientRect();
+    const x = event.clientX || (rect.left + rect.width / 2);
+    const y = event.clientY || (rect.top + rect.height / 2);
+    spawnClickParticle(x, y);
+
+    // Combat & UI
+    attackBossFromClicks(prod.bpc * 0.5);
+    updateDisplay();
+}
 
 
     burgerEl.addEventListener("click", handleBurgerClick);
